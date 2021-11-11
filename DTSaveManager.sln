@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31605.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTSaveManager", "DTSaveManager\DTSaveManager.csproj", "{04AC6FEB-28FC-4A67-A82E-8BDC0EDE76EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTSaveManagerGUI", "DTSaveManager\DTSaveManagerGUI.csproj", "{04AC6FEB-28FC-4A67-A82E-8BDC0EDE76EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
