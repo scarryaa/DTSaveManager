@@ -32,6 +32,8 @@ namespace DTSaveManager
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DTSaveManagerGUI));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.saveFileList = new System.Windows.Forms.TreeView();
+            this._export = new System.Windows.Forms.Button();
+            this._import = new System.Windows.Forms.Button();
             this._duplicate = new System.Windows.Forms.Button();
             this._name = new System.Windows.Forms.TextBox();
             this._rename = new System.Windows.Forms.Button();
@@ -56,6 +58,8 @@ namespace DTSaveManager
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this._export);
+            this.splitContainer1.Panel2.Controls.Add(this._import);
             this.splitContainer1.Panel2.Controls.Add(this._duplicate);
             this.splitContainer1.Panel2.Controls.Add(this._name);
             this.splitContainer1.Panel2.Controls.Add(this._rename);
@@ -76,6 +80,28 @@ namespace DTSaveManager
             this.saveFileList.TabIndex = 0;
             this.saveFileList.BeforeCheck += new System.Windows.Forms.TreeViewCancelEventHandler(this.CheckDisabler);
             this.saveFileList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SaveListSelectionChanged);
+            // 
+            // _export
+            // 
+            this._export.Enabled = false;
+            this._export.Location = new System.Drawing.Point(4, 163);
+            this._export.Name = "_export";
+            this._export.Size = new System.Drawing.Size(211, 23);
+            this._export.TabIndex = 7;
+            this._export.Text = "Export";
+            this._export.UseVisualStyleBackColor = true;
+            this._export.Click += new System.EventHandler(this.ExportSave);
+            // 
+            // _import
+            // 
+            this._import.Enabled = false;
+            this._import.Location = new System.Drawing.Point(3, 134);
+            this._import.Name = "_import";
+            this._import.Size = new System.Drawing.Size(211, 23);
+            this._import.TabIndex = 6;
+            this._import.Text = "Import";
+            this._import.UseVisualStyleBackColor = true;
+            this._import.Click += new System.EventHandler(this.ImportSave);
             // 
             // _duplicate
             // 
@@ -167,6 +193,8 @@ namespace DTSaveManager
         private System.Windows.Forms.Button _rename;
         private System.Windows.Forms.Button _applyChanges;
         private System.Windows.Forms.Button _resetChanges;
+        private System.Windows.Forms.Button _export;
+        private System.Windows.Forms.Button _import;
     }
 }
 

@@ -45,6 +45,8 @@ namespace DTSaveManager
             _name.Enabled = false;
             _name.Text = "";
             _duplicate.Enabled = false;
+            _import.Enabled = false;
+            _export.Enabled = false;
 
             saveFileList.SelectedNode = null;
             _initialized = true;
@@ -93,10 +95,22 @@ namespace DTSaveManager
 
                 return _steamInstallPath + @"\userdata\" + _steamActiveUser + @"\1325900\remote";
             }
-            catch (Exception ex)
+            catch
             {
-                // error, user has to navigate path their own
-                return ex.Message;
+                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                {
+                    openFileDialog.Filter = "DTSaveData.txt|*.txt";
+                    openFileDialog.FileName = "DTSaveData.txt";
+                    openFileDialog.FilterIndex = 1;
+
+                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        return Path.GetDirectoryName(openFileDialog.FileName);
+                    } else
+                    {
+                        return Application.StartupPath;
+                    }
+                }
             }
         }
 
@@ -186,6 +200,8 @@ namespace DTSaveManager
             _name.Enabled = true;
             _name.Text = data.nickName.Length > 0 ? data.nickName : data.fileName;
             _duplicate.Enabled = true;
+            _import.Enabled = true;
+            _export.Enabled = true;
         }
 
         private void RenameSelection(object sender, EventArgs e)
@@ -264,6 +280,58 @@ namespace DTSaveManager
         {
             if (!_initialized) return;
             e.Cancel = true;
+        }
+
+        private void ImportSave(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = Application.StartupPath;
+                openFileDialog.Filter = "DTSaveData.txt|*.txt";
+                openFileDialog.FileName = "DTSaveData.txt";
+                openFileDialog.FilterIndex = 1;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    SaveMetadata data = new SaveMetadata()
+                    {
+                        fileName = openFileDialog.SafeFileName,
+                        nickName = "",
+                        path = _saveDirectory + @"\_dtsm\" + openFileDialog.SafeFileName,
+                        active = false,
+                    };
+
+                    if (!File.Exists(data.path))
+                    {
+                        File.Copy(openFileDialog.FileName, data.path, true);
+                        File.WriteAllText(data.path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(data));
+
+                        _saveMetadata.Add(data);
+                        InitializeTreeView();
+                    }
+                    else
+                    {
+                        // throw error
+                        MessageBox.Show("File already exists!");
+                    }
+                }
+            }
+        }
+
+        private void ExportSave(object sender, EventArgs e)
+        {
+            using (var saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.InitialDirectory = Application.StartupPath;
+                saveFileDialog.Filter = "DTSaveData.txt|*.txt";
+                saveFileDialog.FileName = "DTSaveData.txt";
+                saveFileDialog.FilterIndex = 1;
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    File.WriteAllBytes(saveFileDialog.FileName, File.ReadAllBytes(((SaveMetadata)saveFileList.SelectedNode.Tag).path));
+                }
+            }
         }
     }
 }
