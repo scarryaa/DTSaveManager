@@ -164,7 +164,6 @@ namespace DTSaveManager
                     Text = data.nickName.Length > 0 && data.nickName != data.fileName ? "\"" + data.nickName + "\" (" + data.fileName + ")" : data.fileName,
                     Checked = data.active,
                 };
-                Console.WriteLine(data.active);
 
                 saveFileList.Nodes.Add(node);
 
