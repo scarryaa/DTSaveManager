@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SaveMetadata.cs" />
     <Compile Include="DTSaveManagerGUI.cs">
       <SubType>Form</SubType>
     </Compile>

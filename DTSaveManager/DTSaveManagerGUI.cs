@@ -10,11 +10,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using DTSaveManager;
 
 namespace DTSaveManager
 {
     public partial class DTSaveManagerGUI : Form
     {
+        private List<SaveMetadata> _saveMetadata;
         public DTSaveManagerGUI()
         {
             InitializeComponent();
@@ -22,22 +24,36 @@ namespace DTSaveManager
 
         private void Initialization(object sender, EventArgs e)
         {
-
+            _saveMetadata = new List<SaveMetadata>();
             string _saveDirectory = GetPathFromRegistryKeys();
-            Console.WriteLine(_saveDirectory);
+            InitializeFiles(_saveDirectory);
+        }
 
+        private void InitializeFiles(string _saveDirectory)
+        {
             foreach (string file in Directory.EnumerateFiles(_saveDirectory, "*.txt"))
             {
-                if (File.Exists(file.Replace(".txt", ".json"))) {
-                } else
-                {
-                    //InitializeJson(file);
-                }
-                string contents = File.ReadAllText(file.Replace("txt", "json"));
                 string fileName = Path.GetFileName(file);
+                string jsonPath = file.Replace(".txt", ".dtsm");
+                SaveMetadata data;
+
+                if (File.Exists(jsonPath))
+                {
+                    data = JsonConvert.DeserializeObject<SaveMetadata>(File.ReadAllText(jsonPath));
+                }
+                else
+                {
+                    data = new SaveMetadata()
+                    {
+                        fileName = fileName,
+                        nickName = "",
+                        path = file,
+                        active = false
+                    };
+                    File.WriteAllText(jsonPath, JsonConvert.SerializeObject(data));
+                }
+                _saveMetadata.Add(data);
             }
-
-
         }
 
         private string GetPathFromRegistryKeys()
