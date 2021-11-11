@@ -290,7 +290,7 @@ namespace DTSaveManager
 
             }
 
-            InitializeTreeView();
+            Initializer();
         }
 
         private void CheckDisabler(object sender, TreeViewCancelEventArgs e)
