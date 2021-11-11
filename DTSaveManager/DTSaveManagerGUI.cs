@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using DTSaveManager;
+using System.Diagnostics;
 
 namespace DTSaveManager
 {
@@ -47,6 +48,7 @@ namespace DTSaveManager
             _duplicate.Enabled = false;
             _import.Enabled = false;
             _export.Enabled = false;
+            _remove.Enabled = false;
 
             saveFileList.SelectedNode = null;
             _initialized = true;
@@ -202,6 +204,7 @@ namespace DTSaveManager
             _duplicate.Enabled = true;
             _import.Enabled = true;
             _export.Enabled = true;
+            _remove.Enabled = true;
         }
 
         private void RenameSelection(object sender, EventArgs e)
@@ -209,6 +212,8 @@ namespace DTSaveManager
             SaveMetadata data = (SaveMetadata)saveFileList.SelectedNode.Tag;
             data.nickName = _name.Text;
             saveFileList.SelectedNode.Text = data.nickName.Length > 0 && data.nickName != data.fileName ? "\"" + data.nickName + "\" (" + data.fileName + ")" : data.fileName;
+
+            InitializeTreeView();
         }
 
         private void SetActive(object sender, EventArgs e)
@@ -246,7 +251,7 @@ namespace DTSaveManager
             if (!File.Exists(newData.path))
             {
                 File.Copy(oldPath, newData.path, true);
-                File.Copy(oldPath.Replace(".txt", ".dtsm"), newData.path.Replace(".txt", ".dtsm"), true);
+                File.WriteAllText(newData.path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(newData));
 
                 _saveMetadata.Add(newData);
                 InitializeTreeView();
@@ -265,15 +270,27 @@ namespace DTSaveManager
 
             foreach (TreeNode node in saveFileList.Nodes)
             {
-                SaveMetadata _data = (SaveMetadata)node.Tag;
-                if (_data.active && node.Checked)
+                // check if file is marked for removal
+                if (File.Exists(node.Tag.ToString()))
                 {
-                    if (File.Exists(_saveDirectory + @"\DTSaveData.txt"))
+                    File.Delete(node.Tag.ToString());
+                    File.Delete(node.Tag.ToString().Replace(".txt", ".dtsm"));
+                }
+                else
+                {
+                    SaveMetadata _data = (SaveMetadata)node.Tag;
+                    if (_data.active && node.Checked)
                     {
-                        File.Copy(_saveDirectory + @"\_dtsm\" + _data.fileName, _saveDirectory + @"\DTSaveData.txt", true);
+                        if (File.Exists(_saveDirectory + @"\DTSaveData.txt"))
+                        {
+                            File.Copy(_saveDirectory + @"\_dtsm\" + _data.fileName, _saveDirectory + @"\DTSaveData.txt", true);
+                        }
                     }
                 }
+
             }
+
+            InitializeTreeView();
         }
 
         private void CheckDisabler(object sender, TreeViewCancelEventArgs e)
@@ -332,6 +349,20 @@ namespace DTSaveManager
                     File.WriteAllBytes(saveFileDialog.FileName, File.ReadAllBytes(((SaveMetadata)saveFileList.SelectedNode.Tag).path));
                 }
             }
+
+            InitializeTreeView();
+        }
+
+        private void RemoveSelection(object sender, EventArgs e)
+        {
+            MessageBox.Show("The save file is marked for removal. If you really want to remove this save file, click on 'Apply Changes' now. To cancel the removal, either click 'Reset Changes' or initiate any other action, such as Set Active, Rename, Duplicate, Import or Export.");
+            saveFileList.SelectedNode.Text = "[*remove] " + saveFileList.SelectedNode.Text;
+            saveFileList.SelectedNode.Tag = (object)((SaveMetadata)saveFileList.SelectedNode.Tag).path;
+        }
+
+        private void OpenSaveDirectory(object sender, EventArgs e)
+        {
+            Process.Start(_saveDirectory);
         }
     }
 }

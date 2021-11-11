@@ -32,6 +32,8 @@ namespace DTSaveManager
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DTSaveManagerGUI));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.saveFileList = new System.Windows.Forms.TreeView();
+            this._openDir = new System.Windows.Forms.Button();
+            this._remove = new System.Windows.Forms.Button();
             this._export = new System.Windows.Forms.Button();
             this._import = new System.Windows.Forms.Button();
             this._duplicate = new System.Windows.Forms.Button();
@@ -58,6 +60,8 @@ namespace DTSaveManager
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this._openDir);
+            this.splitContainer1.Panel2.Controls.Add(this._remove);
             this.splitContainer1.Panel2.Controls.Add(this._export);
             this.splitContainer1.Panel2.Controls.Add(this._import);
             this.splitContainer1.Panel2.Controls.Add(this._duplicate);
@@ -81,10 +85,31 @@ namespace DTSaveManager
             this.saveFileList.BeforeCheck += new System.Windows.Forms.TreeViewCancelEventHandler(this.CheckDisabler);
             this.saveFileList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SaveListSelectionChanged);
             // 
+            // _openDir
+            // 
+            this._openDir.Location = new System.Drawing.Point(3, 212);
+            this._openDir.Name = "_openDir";
+            this._openDir.Size = new System.Drawing.Size(211, 23);
+            this._openDir.TabIndex = 9;
+            this._openDir.Text = "Open Save Directory";
+            this._openDir.UseVisualStyleBackColor = true;
+            this._openDir.Click += new System.EventHandler(this.OpenSaveDirectory);
+            // 
+            // _remove
+            // 
+            this._remove.Enabled = false;
+            this._remove.Location = new System.Drawing.Point(3, 171);
+            this._remove.Name = "_remove";
+            this._remove.Size = new System.Drawing.Size(211, 23);
+            this._remove.TabIndex = 8;
+            this._remove.Text = "Remove";
+            this._remove.UseVisualStyleBackColor = true;
+            this._remove.Click += new System.EventHandler(this.RemoveSelection);
+            // 
             // _export
             // 
             this._export.Enabled = false;
-            this._export.Location = new System.Drawing.Point(4, 163);
+            this._export.Location = new System.Drawing.Point(3, 147);
             this._export.Name = "_export";
             this._export.Size = new System.Drawing.Size(211, 23);
             this._export.TabIndex = 7;
@@ -95,7 +120,7 @@ namespace DTSaveManager
             // _import
             // 
             this._import.Enabled = false;
-            this._import.Location = new System.Drawing.Point(3, 134);
+            this._import.Location = new System.Drawing.Point(3, 123);
             this._import.Name = "_import";
             this._import.Size = new System.Drawing.Size(211, 23);
             this._import.TabIndex = 6;
@@ -135,7 +160,7 @@ namespace DTSaveManager
             // 
             // _applyChanges
             // 
-            this._applyChanges.Location = new System.Drawing.Point(3, 236);
+            this._applyChanges.Location = new System.Drawing.Point(3, 241);
             this._applyChanges.Name = "_applyChanges";
             this._applyChanges.Size = new System.Drawing.Size(211, 23);
             this._applyChanges.TabIndex = 2;
@@ -195,6 +220,8 @@ namespace DTSaveManager
         private System.Windows.Forms.Button _resetChanges;
         private System.Windows.Forms.Button _export;
         private System.Windows.Forms.Button _import;
+        private System.Windows.Forms.Button _remove;
+        private System.Windows.Forms.Button _openDir;
     }
 }
 
