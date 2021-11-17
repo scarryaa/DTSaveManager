@@ -222,9 +222,15 @@ namespace DTSaveManager
             foreach(TreeNode node in saveFileList.Nodes)
             {
                 // Disable all (other) nodes
-                node.Checked = false;
                 SaveMetadata _data = (SaveMetadata)node.Tag;
+
+                if (node.Checked == true && _data.active == true)
+                {
+                    File.Copy(_saveDirectory + "\\DTSaveData.txt", _saveDirectory + @"\_dtsm\" + _data.fileName, true);
+                }
+                
                 _data.active = false;
+                node.Checked = false;
             }
 
             SaveMetadata data = (SaveMetadata)saveFileList.SelectedNode.Tag;
