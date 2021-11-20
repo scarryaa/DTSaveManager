@@ -19,7 +19,7 @@ namespace DTSaveManager
     {
         private List<SaveMetadata> _saveMetadata;
         private bool _initialized = false;
-        private string _saveDirectory;
+        private static string _saveDirectory;
         public DTSaveManagerGUI()
         {
             InitializeComponent();
@@ -55,7 +55,10 @@ namespace DTSaveManager
 
             if (_saveMetadata.FindAll(m => m.active == true).Count != 1)
             {
-                _saveMetadata.Find(m => m.fileName == "DTSaveData.txt").active = true;
+                if (File.Exists(_saveDirectory + @"\DTSaveData.txt"))
+                {
+                    _saveMetadata.Find(m => m.fileName == "DTSaveData.txt").active = true;
+                }
             }
         }
 
@@ -88,6 +91,10 @@ namespace DTSaveManager
                     if (o != null)
                     {
                         _steamActiveUser = o.ToString();
+                        if (_steamActiveUser == "0")
+                        {
+                            throw new Exception(@"Registry Key 'Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Valve\Steam\ActiveProcess\ActiveUser' is 0.");
+                        }
                     }
                     else
                     {
@@ -99,18 +106,28 @@ namespace DTSaveManager
             }
             catch
             {
-                using (OpenFileDialog openFileDialog = new OpenFileDialog())
+                // check for GOG
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +  @"\..\LocalLow\Fabraz\Demon Turf\DTSaveData.txt"))
                 {
-                    openFileDialog.Filter = "DTSaveData.txt|*.txt";
-                    openFileDialog.FileName = "DTSaveData.txt";
-                    openFileDialog.FilterIndex = 1;
+                    return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\LocalLow\Fabraz\Demon Turf\";
+                } else
+                {
 
-                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+
+                    using (OpenFileDialog openFileDialog = new OpenFileDialog())
                     {
-                        return Path.GetDirectoryName(openFileDialog.FileName);
-                    } else
-                    {
-                        return Application.StartupPath;
+                        openFileDialog.Filter = "DTSaveData.txt|*.txt";
+                        openFileDialog.FileName = "DTSaveData.txt";
+                        openFileDialog.FilterIndex = 1;
+
+                        if (openFileDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            return Path.GetDirectoryName(openFileDialog.FileName);
+                        }
+                        else
+                        {
+                            return Application.StartupPath;
+                        }
                     }
                 }
             }
@@ -119,10 +136,11 @@ namespace DTSaveManager
         private void InitializeFiles(string _saveDirectory)
         {
             // move files to _dtsm folder
+
+            Directory.CreateDirectory(_saveDirectory + @"\_dtsm");
             foreach (string file in Directory.EnumerateFiles(_saveDirectory, "*.txt"))
             {
                 string fileName = Path.GetFileName(file);
-                Directory.CreateDirectory(_saveDirectory + @"\_dtsm");
 
                 if (file.Contains(@"\DTSaveData.txt"))
                 {
@@ -130,7 +148,7 @@ namespace DTSaveManager
                     {
                         File.Copy(file, _saveDirectory + @"\_dtsm\" + fileName);
                     }
-                } else
+                } else if (!file.Contains(@"\output_log.txt"))
                 {
                     File.Move(file, _saveDirectory + @"\_dtsm\" + fileName);
                 }
@@ -164,7 +182,10 @@ namespace DTSaveManager
 
             if (_saveMetadata.FindAll(m => m.active == true).Count != 1)
             {
-                _saveMetadata.Find(m => m.fileName == "DTSaveData.txt").active = true;
+                if (File.Exists(_saveDirectory + @"\DTSaveData.txt"))
+                {
+                    _saveMetadata.Find(m => m.fileName == "DTSaveData.txt").active = true;
+                }
             }
         }
 
@@ -183,6 +204,10 @@ namespace DTSaveManager
 
                 saveFileList.Nodes.Add(node);
 
+                if (node.Checked == true && data.active == true)
+                {
+                    File.Copy(_saveDirectory + "\\DTSaveData.txt", _saveDirectory + @"\_dtsm\" + data.fileName, true);
+                }
             });
         }
 
@@ -369,6 +394,15 @@ namespace DTSaveManager
         private void OpenSaveDirectory(object sender, EventArgs e)
         {
             Process.Start(_saveDirectory);
+        }
+
+        private void OnExit(object sender, FormClosingEventArgs e)
+        {
+            // if dtsm folder is empty, clean it up
+            if (Directory.GetFiles(_saveDirectory + "\\_dtsm").Length <= 0)
+            {
+                Directory.Delete(_saveDirectory + "\\_dtsm");
+            }
         }
     }
 }

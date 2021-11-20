@@ -87,7 +87,7 @@ namespace DTSaveManager
             // 
             // _openDir
             // 
-            this._openDir.Location = new System.Drawing.Point(3, 212);
+            this._openDir.Location = new System.Drawing.Point(2, 209);
             this._openDir.Name = "_openDir";
             this._openDir.Size = new System.Drawing.Size(211, 23);
             this._openDir.TabIndex = 9;
@@ -98,7 +98,7 @@ namespace DTSaveManager
             // _remove
             // 
             this._remove.Enabled = false;
-            this._remove.Location = new System.Drawing.Point(3, 171);
+            this._remove.Location = new System.Drawing.Point(2, 176);
             this._remove.Name = "_remove";
             this._remove.Size = new System.Drawing.Size(211, 23);
             this._remove.TabIndex = 8;
@@ -109,7 +109,7 @@ namespace DTSaveManager
             // _export
             // 
             this._export.Enabled = false;
-            this._export.Location = new System.Drawing.Point(3, 147);
+            this._export.Location = new System.Drawing.Point(2, 152);
             this._export.Name = "_export";
             this._export.Size = new System.Drawing.Size(211, 23);
             this._export.TabIndex = 7;
@@ -120,7 +120,7 @@ namespace DTSaveManager
             // _import
             // 
             this._import.Enabled = false;
-            this._import.Location = new System.Drawing.Point(3, 123);
+            this._import.Location = new System.Drawing.Point(2, 128);
             this._import.Name = "_import";
             this._import.Size = new System.Drawing.Size(211, 23);
             this._import.TabIndex = 6;
@@ -131,7 +131,7 @@ namespace DTSaveManager
             // _duplicate
             // 
             this._duplicate.Enabled = false;
-            this._duplicate.Location = new System.Drawing.Point(3, 85);
+            this._duplicate.Location = new System.Drawing.Point(2, 90);
             this._duplicate.Name = "_duplicate";
             this._duplicate.Size = new System.Drawing.Size(211, 23);
             this._duplicate.TabIndex = 5;
@@ -142,15 +142,15 @@ namespace DTSaveManager
             // _name
             // 
             this._name.Enabled = false;
-            this._name.Location = new System.Drawing.Point(4, 59);
+            this._name.Location = new System.Drawing.Point(3, 62);
             this._name.Name = "_name";
-            this._name.Size = new System.Drawing.Size(210, 20);
+            this._name.Size = new System.Drawing.Size(209, 20);
             this._name.TabIndex = 4;
             // 
             // _rename
             // 
             this._rename.Enabled = false;
-            this._rename.Location = new System.Drawing.Point(3, 34);
+            this._rename.Location = new System.Drawing.Point(2, 37);
             this._rename.Name = "_rename";
             this._rename.Size = new System.Drawing.Size(211, 23);
             this._rename.TabIndex = 3;
@@ -160,7 +160,7 @@ namespace DTSaveManager
             // 
             // _applyChanges
             // 
-            this._applyChanges.Location = new System.Drawing.Point(3, 241);
+            this._applyChanges.Location = new System.Drawing.Point(2, 241);
             this._applyChanges.Name = "_applyChanges";
             this._applyChanges.Size = new System.Drawing.Size(211, 23);
             this._applyChanges.TabIndex = 2;
@@ -170,7 +170,7 @@ namespace DTSaveManager
             // 
             // _resetChanges
             // 
-            this._resetChanges.Location = new System.Drawing.Point(3, 265);
+            this._resetChanges.Location = new System.Drawing.Point(2, 265);
             this._resetChanges.Name = "_resetChanges";
             this._resetChanges.Size = new System.Drawing.Size(211, 23);
             this._resetChanges.TabIndex = 1;
@@ -181,7 +181,7 @@ namespace DTSaveManager
             // _setActive
             // 
             this._setActive.Enabled = false;
-            this._setActive.Location = new System.Drawing.Point(3, 5);
+            this._setActive.Location = new System.Drawing.Point(2, 5);
             this._setActive.Name = "_setActive";
             this._setActive.Size = new System.Drawing.Size(211, 23);
             this._setActive.TabIndex = 0;
@@ -198,6 +198,7 @@ namespace DTSaveManager
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DTSaveManagerGUI";
             this.Text = "Demon Turf Save Manager [by Nitro]";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnExit);
             this.Load += new System.EventHandler(this.Initialization);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
