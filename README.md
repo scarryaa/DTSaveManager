@@ -1,8 +1,8 @@
 # DTSaveManager
-Demon Turf Save Manager
+Demon Turf Save Manager (+ Neon Splash)
 
 
-A simple Save Manager for the 2021 videogame Demon Turf developed by the indie studio Fabraz Inc. and published by Playtonic Friends. This Save Manager is technically also compatible with their Demo and Trials releases, though neither of those really support saving the game.
+A simple Save Manager for the 2021 videogame Demon Turf, as well as the 2022 mini-sequel Demon Turf Neon Splash, developed by the indie studio Fabraz Inc. and published by Playtonic Friends. This Save Manager is technically also compatible with their Demo and Trials releases, though neither of those really support saving the game.
 
 This program creates a folder called `_dtsm` in Demon Turf's save directory, moves all existing save files (any `*.txt` files, to be exact) to that folder and swaps out the actual `DTSaveData.txt` with whichever file is marked as 'Active' as indicated with a checked checkbox.
 Currently supports Steam and GOG. (Thanks VTVRVXIV!)
