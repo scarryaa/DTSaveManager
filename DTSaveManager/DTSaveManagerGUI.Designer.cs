@@ -30,6 +30,7 @@ namespace DTSaveManager
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DTSaveManagerGUI));
+            this._modeSwitcher = new System.Windows.Forms.Button();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.saveFileList = new System.Windows.Forms.TreeView();
             this._openDir = new System.Windows.Forms.Button();
@@ -48,6 +49,17 @@ namespace DTSaveManager
             this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
+            // _modeSwitcher
+            // 
+            this._modeSwitcher.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this._modeSwitcher.Location = new System.Drawing.Point(2, 3);
+            this._modeSwitcher.Name = "_modeSwitcher";
+            this._modeSwitcher.Size = new System.Drawing.Size(211, 38);
+            this._modeSwitcher.TabIndex = 10;
+            this._modeSwitcher.Text = "Change Mode (Current: Main Game)";
+            this._modeSwitcher.UseVisualStyleBackColor = false;
+            this._modeSwitcher.Click += new System.EventHandler(this.SwitchMode);
+            // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -60,6 +72,7 @@ namespace DTSaveManager
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this._modeSwitcher);
             this.splitContainer1.Panel2.Controls.Add(this._openDir);
             this.splitContainer1.Panel2.Controls.Add(this._remove);
             this.splitContainer1.Panel2.Controls.Add(this._export);
@@ -70,7 +83,7 @@ namespace DTSaveManager
             this.splitContainer1.Panel2.Controls.Add(this._applyChanges);
             this.splitContainer1.Panel2.Controls.Add(this._resetChanges);
             this.splitContainer1.Panel2.Controls.Add(this._setActive);
-            this.splitContainer1.Size = new System.Drawing.Size(622, 291);
+            this.splitContainer1.Size = new System.Drawing.Size(622, 343);
             this.splitContainer1.SplitterDistance = 401;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -80,14 +93,14 @@ namespace DTSaveManager
             this.saveFileList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.saveFileList.Location = new System.Drawing.Point(0, 0);
             this.saveFileList.Name = "saveFileList";
-            this.saveFileList.Size = new System.Drawing.Size(401, 291);
+            this.saveFileList.Size = new System.Drawing.Size(401, 343);
             this.saveFileList.TabIndex = 0;
             this.saveFileList.BeforeCheck += new System.Windows.Forms.TreeViewCancelEventHandler(this.CheckDisabler);
             this.saveFileList.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.SaveListSelectionChanged);
             // 
             // _openDir
             // 
-            this._openDir.Location = new System.Drawing.Point(2, 209);
+            this._openDir.Location = new System.Drawing.Point(2, 260);
             this._openDir.Name = "_openDir";
             this._openDir.Size = new System.Drawing.Size(211, 23);
             this._openDir.TabIndex = 9;
@@ -98,7 +111,7 @@ namespace DTSaveManager
             // _remove
             // 
             this._remove.Enabled = false;
-            this._remove.Location = new System.Drawing.Point(2, 176);
+            this._remove.Location = new System.Drawing.Point(2, 227);
             this._remove.Name = "_remove";
             this._remove.Size = new System.Drawing.Size(211, 23);
             this._remove.TabIndex = 8;
@@ -109,7 +122,7 @@ namespace DTSaveManager
             // _export
             // 
             this._export.Enabled = false;
-            this._export.Location = new System.Drawing.Point(2, 152);
+            this._export.Location = new System.Drawing.Point(2, 203);
             this._export.Name = "_export";
             this._export.Size = new System.Drawing.Size(211, 23);
             this._export.TabIndex = 7;
@@ -120,7 +133,7 @@ namespace DTSaveManager
             // _import
             // 
             this._import.Enabled = false;
-            this._import.Location = new System.Drawing.Point(2, 128);
+            this._import.Location = new System.Drawing.Point(2, 179);
             this._import.Name = "_import";
             this._import.Size = new System.Drawing.Size(211, 23);
             this._import.TabIndex = 6;
@@ -131,7 +144,7 @@ namespace DTSaveManager
             // _duplicate
             // 
             this._duplicate.Enabled = false;
-            this._duplicate.Location = new System.Drawing.Point(2, 90);
+            this._duplicate.Location = new System.Drawing.Point(2, 141);
             this._duplicate.Name = "_duplicate";
             this._duplicate.Size = new System.Drawing.Size(211, 23);
             this._duplicate.TabIndex = 5;
@@ -142,7 +155,7 @@ namespace DTSaveManager
             // _name
             // 
             this._name.Enabled = false;
-            this._name.Location = new System.Drawing.Point(3, 62);
+            this._name.Location = new System.Drawing.Point(3, 113);
             this._name.Name = "_name";
             this._name.Size = new System.Drawing.Size(209, 20);
             this._name.TabIndex = 4;
@@ -150,7 +163,7 @@ namespace DTSaveManager
             // _rename
             // 
             this._rename.Enabled = false;
-            this._rename.Location = new System.Drawing.Point(2, 37);
+            this._rename.Location = new System.Drawing.Point(2, 88);
             this._rename.Name = "_rename";
             this._rename.Size = new System.Drawing.Size(211, 23);
             this._rename.TabIndex = 3;
@@ -160,7 +173,7 @@ namespace DTSaveManager
             // 
             // _applyChanges
             // 
-            this._applyChanges.Location = new System.Drawing.Point(2, 241);
+            this._applyChanges.Location = new System.Drawing.Point(2, 292);
             this._applyChanges.Name = "_applyChanges";
             this._applyChanges.Size = new System.Drawing.Size(211, 23);
             this._applyChanges.TabIndex = 2;
@@ -170,7 +183,7 @@ namespace DTSaveManager
             // 
             // _resetChanges
             // 
-            this._resetChanges.Location = new System.Drawing.Point(2, 265);
+            this._resetChanges.Location = new System.Drawing.Point(2, 316);
             this._resetChanges.Name = "_resetChanges";
             this._resetChanges.Size = new System.Drawing.Size(211, 23);
             this._resetChanges.TabIndex = 1;
@@ -181,7 +194,7 @@ namespace DTSaveManager
             // _setActive
             // 
             this._setActive.Enabled = false;
-            this._setActive.Location = new System.Drawing.Point(2, 5);
+            this._setActive.Location = new System.Drawing.Point(2, 56);
             this._setActive.Name = "_setActive";
             this._setActive.Size = new System.Drawing.Size(211, 23);
             this._setActive.TabIndex = 0;
@@ -193,7 +206,7 @@ namespace DTSaveManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(622, 291);
+            this.ClientSize = new System.Drawing.Size(622, 343);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DTSaveManagerGUI";
@@ -223,6 +236,7 @@ namespace DTSaveManager
         private System.Windows.Forms.Button _import;
         private System.Windows.Forms.Button _remove;
         private System.Windows.Forms.Button _openDir;
+        private System.Windows.Forms.Button _modeSwitcher;
     }
 }
 

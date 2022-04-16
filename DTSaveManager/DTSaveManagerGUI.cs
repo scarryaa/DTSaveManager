@@ -20,6 +20,7 @@ namespace DTSaveManager
         private List<SaveMetadata> _saveMetadata;
         private bool _initialized = false;
         private static string _saveDirectory;
+        private bool _neonMode = false;
         public DTSaveManagerGUI()
         {
             InitializeComponent();
@@ -102,7 +103,7 @@ namespace DTSaveManager
                     }
                 }
 
-                return _steamInstallPath + @"\userdata\" + _steamActiveUser + @"\1325900\remote";
+                return _steamInstallPath + @"\userdata\" + _steamActiveUser + @"\" + (_neonMode ? "1747890" : "1325900") + @"\remote";
             }
             catch
             {
@@ -402,6 +403,19 @@ namespace DTSaveManager
             if (Directory.GetFiles(_saveDirectory + "\\_dtsm").Length <= 0)
             {
                 Directory.Delete(_saveDirectory + "\\_dtsm");
+            }
+        }
+
+        private void SwitchMode(object sender, EventArgs e)
+        {
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result = MessageBox.Show("This will reset all unsaved settings, do you still want to proceed?", "Warning!", buttons);
+            if (result == DialogResult.Yes)
+            {
+                _neonMode = !_neonMode;
+                _modeSwitcher.Text = _neonMode ? "Change Mode (Current: Neon Splash)" : "Change Mode (Current: Main Game)";
+                _modeSwitcher.BackColor = _neonMode ? Color.FromArgb(192, 255, 255) : Color.FromArgb(255, 192, 192);
+                Initializer();
             }
         }
     }
