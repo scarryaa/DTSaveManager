@@ -1,0 +1,37 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush Color="#D4D6D8" x:Key="DTTitleBarBrush"/>
+    <SolidColorBrush Color="#4DAFA7" x:Key="DTBackgroundBrush"/>
+    <SolidColorBrush Color="#EFF9F2" x:Key="DTForegroundBrush"/>
+    <SolidColorBrush Color="#FFFFFF" x:Key="DTMenuButtonBrush"/>
+    <SolidColorBrush Color="#009691" x:Key="DTInteractiveBrush"/>
+    <SolidColorBrush Color="#E53748" x:Key="DTAlertBrush"/>
+    <SolidColorBrush Color="#A0DBD7" x:Key="DTForegroundSecondaryBrush"/>
+    <SolidColorBrush Color="#000000" x:Key="TextBrush"/>
+    <SolidColorBrush Color="#FFFFFF" x:Key="InactiveTextBrush"/>
+    
+    <!-- Button Hovers -->
+    <SolidColorBrush Color="#33B7B0 " x:Key="InteractiveHoverBrush"/>
+    <SolidColorBrush Color="#FF7F8C" x:Key="AlertHoverBrush"/>
+    <SolidColorBrush Color="#A0E5DC" x:Key="DTMenuButtonHoverBrush"/>
+    <!-- Button Press -->
+    <SolidColorBrush Color="#005B57" x:Key="InteractivePressedBrush"/>
+    <SolidColorBrush Color="#F23E3E" x:Key="AlertPressBrush"/>
+    <SolidColorBrush Color="#999999" x:Key="DTMenuButtonPressedBrush"/>
+
+    <!-- CheckBox -->
+    <SolidColorBrush Color="#DEE5E0" x:Key="CheckBoxBackgroundBrush"/>
+    <SolidColorBrush Color="#4DAFA7" x:Key="CheckBoxBorderBrush"/>
+    <SolidColorBrush Color="#009691" x:Key="CheckBoxForegroundBrush"/>
+    <!-- CheckBox Pressed -->
+    <SolidColorBrush Color="#EAF2ED" x:Key="CheckBoxBackgroundPressedBrush"/>
+    <SolidColorBrush Color="#51BAAF" x:Key="CheckBoxBorderPressedBrush"/>
+    <SolidColorBrush Color="#00A09B" x:Key="CheckBoxForegroundPressedBrush"/>
+    <!-- CheckBox Hover -->
+    <SolidColorBrush Color="#F7FFFA" x:Key="CheckBoxBackgroundHoverBrush"/>
+    <SolidColorBrush Color="#57C6B9" x:Key="CheckBoxBorderHoverBrush"/>
+    <SolidColorBrush Color="#00ADA7" x:Key="CheckBoxForegroundHoverBrush"/>
+
+</ResourceDictionary>
+    

@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="DTSaveManager.Views.TreeViewItemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
+             xmlns:s="clr-namespace:System;assembly=mscorlib"
+             xmlns:local="clr-namespace:DTSaveManager"
+             xmlns:views="clr-namespace:DTSaveManager.Views"
+             xmlns:viewmodels="clr-namespace:DTSaveManager.ViewModels"
+             xmlns:converters="clr-namespace:DTSaveManager.Converters"
+             xmlns:enums="clr-namespace:DTSaveManager.DataTypes.Enums"
+             mc:Ignorable="d" 
+             d:DesignHeight="40" d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <converters:MultipleValuesConverter x:Key="multipleValuesConverter"/>
+        <converters:MessageTypeToColorValueConverter x:Key="messageTypeToColorValueConverter"/>
+        <converters:BooleanToVisibilityValueConverter x:Key="booleanToVisibilityValueConverter"/>
+        <viewmodels:TreeViewItemViewModel x:Key="treeViewItemViewModel"/>
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource DTForegroundSecondaryBrush}" CornerRadius="5" Padding="3" Margin="0 3 0 3">
+        <Grid MaxWidth="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=ActualWidth}" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <CheckBox FocusVisualStyle="{DynamicResource CheckBoxFocusVisualStyle1}" Style="{DynamicResource DefaultCheckBox}" Grid.Column="0" VerticalAlignment="Center" Name="Checkbox" Margin="5 3 1 0" IsChecked="{Binding Path=Active}"/>
+            <local:EditBox Grid.Column="1" x:Name="EditBox" Background="Transparent" Foreground="{DynamicResource TextBrush}"/>
+
+            <TextBlock Grid.Column="2" Text="{Binding MessageText}" Background="{DynamicResource DTForegroundSecondaryBrush}" Foreground="{Binding CurrentMessageType, Converter={StaticResource messageTypeToColorValueConverter}}" VerticalAlignment="Center" Padding="0 0 5 0" HorizontalAlignment="Right" Visibility="{Binding ShowMessage, Converter={StaticResource booleanToVisibilityValueConverter}}"/>
+            <Button Grid.Column="3" Style="{StaticResource BorderlessButton}" FontFamily="{StaticResource FontAwesome}" Content="&#xf14b;" Command="{Binding RenameCommand}" CommandParameter="{Binding Value}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+            <Button Grid.Column="4" Style="{StaticResource BorderlessButton}" FontFamily="{StaticResource FontAwesome}" Content="&#xf24d;" Command="{Binding DuplicateCommand}" CommandParameter="{Binding Value}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
+            <ToggleButton Grid.Column="5" Style="{StaticResource ConfirmCancelBorderlessButton}" FontFamily="{StaticResource FontAwesome}" Content="&#x58;" Command="{Binding DisplayMessageCommand}" HorizontalAlignment="Right">
+                <ToggleButton.CommandParameter>
+                    <MultiBinding Converter="{StaticResource multipleValuesConverter}">
+                        <Binding Source="{x:Static enums:MessageType.DeletionMessage}"/>
+                        <Binding>
+                            <Binding.Source>
+                                <s:Boolean>false</s:Boolean>
+                            </Binding.Source>
+                        </Binding>
+                    </MultiBinding>
+                </ToggleButton.CommandParameter>
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Unchecked">
+                        <i:InvokeCommandAction Command="{Binding ClearMessageCommand}" CommandParameter="{x:Static enums:MessageType.DeletionMessage}"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="Indeterminate">
+                        <i:InvokeCommandAction Command="{Binding RemoveCommand}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ToggleButton>
+        </Grid>
+    </Border>
+</UserControl>
