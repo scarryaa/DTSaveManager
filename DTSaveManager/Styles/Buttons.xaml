@@ -2,9 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:DTSaveManager.Views.Custom_Controls">
 
-    <Style x:Key="BorderlessButton" TargetType="{x:Type Button}">
+    <Style x:Key="BorderlessButtonBase" TargetType="{x:Type Button}">
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="FontSize" Value="16px"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5 0 5 0"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -17,6 +17,81 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="BorderlessToggleButtonBase" TargetType="{x:Type ToggleButton}">
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5 0 5 0"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <Border Background="{TemplateBinding Background}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RadioButtonBase" TargetType="{x:Type RadioButton}">
+        <Setter Property="Background" Value="{DynamicResource CheckBoxBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CheckBoxBorderBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource DTInteractiveBrush}"/>
+        <Setter Property="BorderThickness" Value="1.25"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RadioButton}">
+                    <Grid x:Name="templateRoot" Background="Transparent" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border x:Name="checkBoxBorder" CornerRadius="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="1" 
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <Grid x:Name="markGrid">
+                                <Path x:Name="optionMark" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " 
+                                      Fill="{TemplateBinding Foreground}" Margin="1" Opacity="0" Stretch="None"/>
+                                <Rectangle x:Name="indeterminateMark" Fill="{TemplateBinding Foreground}" Margin="2" Opacity="0"/>
+                            </Grid>
+                        </Border>
+                        <ContentPresenter x:Name="contentPresenter" Grid.Column="1" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" 
+                                          RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasContent" Value="true">
+                            <Setter Property="Padding" Value="4,-1,0,0"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBackgroundHoverBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBorderHoverBrush}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource CheckBoxForegroundHoverBrush}"/>
+                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource CheckBoxForegroundHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBackgroundPressedBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBorderPressedBrush}"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource CheckBoxForegroundPressedBrush}"/>
+                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource CheckBoxForegroundPressedBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter Property="Opacity" TargetName="optionMark" Value="1"/>
+                            <Setter Property="Opacity" TargetName="indeterminateMark" Value="0"/>
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter Property="Opacity" TargetName="optionMark" Value="0"/>
+                            <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="BorderlessActionButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BorderlessButtonBase}">
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="False">
                 <Setter Property="Foreground" Value="{DynamicResource DTInteractiveBrush}"/>
@@ -30,9 +105,22 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="BorderlessMenuButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BorderlessButtonBase}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource DTMenuButtonBrush}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource DTMenuButtonHoverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource DTMenuButtonPressedBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="BorderlessButtonWithText" TargetType="{x:Type controls:LabelButton}">
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="Content" Value="{Binding Content}"/>
         <Setter Property="Margin" Value="5 0 5 0"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -42,39 +130,19 @@
                 <ControlTemplate TargetType="{x:Type controls:LabelButton}">
                     <Border Background="{TemplateBinding Background}">
                         <StackPanel Orientation="Horizontal">
-                            <Label Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" Content="{Binding Path=LabelText, RelativeSource={RelativeSource TemplatedParent}}"/>
-                            <Button x:Name="PART_Button" Foreground="{Binding Path=ButtonColor, RelativeSource={RelativeSource TemplatedParent}}" Content="{TemplateBinding Content}" FontFamily="{DynamicResource FontAwesome}" Style="{DynamicResource BorderlessButton}" Command="{TemplateBinding Command}" CommandParameter="{TemplateBinding CommandParameter}"/>
+                            <Label Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" 
+                                   Content="{Binding LabelText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:LabelButton}}}"/>
+                            <Button x:Name="PART_Button" Content="{TemplateBinding Content}" FontFamily="{DynamicResource FontAwesome}" 
+                                    Style="{DynamicResource BorderlessMenuButton}" Margin="5 2 7 0" Command="{TemplateBinding Command}" CommandParameter="{TemplateBinding CommandParameter}"/>
                         </StackPanel>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="Button.IsMouseOver" Value="False">
-                <Setter Property="ButtonColor" Value="{DynamicResource DTMenuButtonBrush}"/>
-            </Trigger>
-            <Trigger Property="Button.IsMouseOver" Value="True">
-                <Setter Property="ButtonColor" Value="{DynamicResource DTMenuButtonHoverBrush}"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
-    <Style x:Key="ConfirmCancelBorderlessButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-        <Setter Property="FontSize" Value="16px"/>
-        <Setter Property="Margin" Value="5 0 5 0"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Background" Value="Transparent"/>
+    <Style x:Key="BorderlessDeleteToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource BorderlessToggleButtonBase}">
         <Setter Property="IsThreeState" Value="True"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ToggleButton}">
-                    <Border Background="{TemplateBinding Background}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
         <Style.Triggers>
             <Trigger Property="IsChecked" Value="False">
                 <Setter Property="Foreground" Value="{DynamicResource DTAlertBrush}"/>
@@ -94,38 +162,28 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="TitleBarButtonStyle" TargetType="{x:Type Button}">
+    <Style x:Key="WindowButton" TargetType="{x:Type Button}">
         <Setter Property="Padding" Value="0" />
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border
-					x:Name="border"
-					Background="Transparent"
-					BorderThickness="0"
-					SnapsToDevicePixels="true">
-                        <ContentPresenter
-						x:Name="contentPresenter"
-						Margin="0"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						Focusable="False"
-						RecognizesAccessKey="True">
+                    <Border x:Name="border" Background="Transparent" BorderThickness="0" SnapsToDevicePixels="true">
+                        <ContentPresenter Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False" RecognizesAccessKey="True">
                             <ContentPresenter.Resources>
                                 <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="TextBlock.FontSize" Value="12"/>
+                                    <Setter Property="TextBlock.FontSize" Value="{StaticResource FontSizeSmall}"/>
                                 </Style>
                             </ContentPresenter.Resources>
                         </ContentPresenter>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="border" Property="Background" Value="Gray"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource WindowButtonHoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="border" Property="Background" Value="Transparent"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource WindowButtonPressedBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -133,94 +191,19 @@
         </Setter>
     </Style>
 
-    <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
-        <Setter Property="IsTabStop" Value="False" />
+    <Style x:Key="WindowCloseButton" TargetType="{x:Type Button}" BasedOn="{StaticResource WindowButton}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border
-					x:Name="border"
-					Background="Transparent"
-					BorderThickness="0"
-					SnapsToDevicePixels="true">
-                        <ContentPresenter
-						x:Name="contentPresenter"
-						Margin="0"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"
-						Focusable="False"
-						RecognizesAccessKey="True" />
+                    <Border x:Name="border" Background="Transparent" BorderThickness="0" SnapsToDevicePixels="true">
+                        <ContentPresenter Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False" RecognizesAccessKey="True" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="border" Property="Background" Value="#FF2400" />
-                            <Setter Property="Foreground" Value="White" />
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource WindowCloseButtonHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="border" Property="Background" Value="DarkRed" />
-                            <Setter Property="Foreground" Value="White" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="DefaultCheckBox" TargetType="{x:Type CheckBox}">
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
-        <Setter Property="Background" Value="{DynamicResource CheckBoxBackgroundBrush}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource CheckBoxBorderBrush}"/>
-        <Setter Property="Foreground" Value="{DynamicResource DTInteractiveBrush}"/>
-        <Setter Property="BorderThickness" Value="1.25"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type CheckBox}">
-                    <Grid x:Name="templateRoot" Background="Transparent" SnapsToDevicePixels="True">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Border x:Name="checkBoxBorder" CornerRadius="2" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="1" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
-                            <Grid x:Name="markGrid">
-                                <Path x:Name="optionMark" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Fill="{TemplateBinding Foreground}" Margin="1" Opacity="0" Stretch="None"/>
-                                <Rectangle x:Name="indeterminateMark" Fill="{TemplateBinding Foreground}" Margin="2" Opacity="0"/>
-                            </Grid>
-                        </Border>
-                        <ContentPresenter x:Name="contentPresenter" Grid.Column="1" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="HasContent" Value="true">
-                            <Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}"/>
-                            <Setter Property="Padding" Value="4,-1,0,0"/>
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBackgroundHoverBrush}"/>
-                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBorderHoverBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource CheckBoxForegroundHoverBrush}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource CheckBoxForegroundHoverBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter Property="Background" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.Disabled.Background}"/>
-                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{StaticResource OptionMark.Disabled.Border}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{StaticResource OptionMark.Disabled.Glyph}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{StaticResource OptionMark.Disabled.Glyph}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="true">
-                            <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBackgroundPressedBrush}"/>
-                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBorderPressedBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource CheckBoxForegroundPressedBrush}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource CheckBoxForegroundPressedBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="true">
-                            <Setter Property="Opacity" TargetName="optionMark" Value="1"/>
-                            <Setter Property="Opacity" TargetName="indeterminateMark" Value="0"/>
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="{x:Null}">
-                            <Setter Property="Opacity" TargetName="optionMark" Value="0"/>
-                            <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource WindowCloseButtonPressedBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

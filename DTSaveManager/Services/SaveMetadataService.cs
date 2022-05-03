@@ -57,7 +57,7 @@ namespace DTSaveManager.Services
 
             saveMetadata.Path = saveMetadata.Path.Replace(saveMetadata.Filename, newFilename + ".txt");
             saveMetadata.Filename = newFilename + ".txt";
-            saveMetadata.Id = ReturnCurrentFileNumber(saveMetadata, isNeonMode);
+            saveMetadata.Id = ReturnCurrentFileNumber(saveMetadata, isNeonMode, rename: true);
 
             File.Copy(oldPath, saveMetadata.Path, true);
             File.WriteAllText(saveMetadata.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(saveMetadata));
@@ -115,6 +115,41 @@ namespace DTSaveManager.Services
             return newSaveMetadata;
         }
 
+        public void ChangeActive(bool isNeonMode, SaveMetadata saveMetadata)
+        {
+            if (!isNeonMode)
+            {
+                saveMetadata = DtSaveMetadata.First(m => m.Filename == saveMetadata.Filename);
+                foreach (SaveMetadata item in DtSaveMetadata)
+                {
+                    if (item.Active != false)
+                    {
+                        item.Active = false;
+                        File.WriteAllText(item.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(item));
+                    }
+                }
+                saveMetadata.Active = true;
+                File.WriteAllText(saveMetadata.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(saveMetadata));
+                File.Copy(_dtSaveDirectory + @"\_dtsm\" + saveMetadata.Filename, _dtSaveDirectory + "\\DTSaveData.txt", true);
+            }
+            else
+            {
+                saveMetadata = NeonSplashSaveMetadata.First(m => m.Filename == saveMetadata.Filename);
+                foreach (SaveMetadata item in NeonSplashSaveMetadata)
+                {
+                    if (item.Active != false)
+                    {
+                        item.Active = false;
+                        File.WriteAllText(item.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(item));
+                    }
+                }
+
+                saveMetadata.Active = true;
+                File.WriteAllText(saveMetadata.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(saveMetadata));
+                File.Copy(_neonSaveDirectory + @"\_dtsm\" + saveMetadata.Filename, _neonSaveDirectory + "\\DTSaveData.txt", true);
+            }
+        }
+
         public SaveMetadata FindSaveMetadataByFilename(bool isNeonMode, string filename)
         {
             if (isNeonMode)
@@ -127,6 +162,7 @@ namespace DTSaveManager.Services
         {
             return isNeonMode ? _neonSaveDirectory : _dtSaveDirectory;
         }
+
         private (string, string) GetPathFromRegistryKeys()
         {
             string _steamActiveUser = "";
@@ -188,6 +224,7 @@ namespace DTSaveManager.Services
                 }
                 else
                 {
+                    MessageBox.Show("Could not find Demon Turf install directory. Please ensure the game is installed, or select a folder manually.");
                     OpenFileDialog openFileDialog = new OpenFileDialog();
                     {
                         openFileDialog.Filter = "DTSaveData.txt|*.txt";
@@ -288,13 +325,24 @@ namespace DTSaveManager.Services
             }
         }
 
-        private int ReturnCurrentFileNumber(SaveMetadata saveMetadata, bool isNeonMode)
+        private int ReturnCurrentFileNumber(SaveMetadata saveMetadata, bool isNeonMode, bool rename = false)
         {
             List<SaveMetadata> data = isNeonMode ? NeonSplashSaveMetadata : DtSaveMetadata;
             bool hasNumber = RegexHelperService.GetStringHasNumber(saveMetadata.Filename);
-            string fileSearchName = saveMetadata.Filename.Substring(0, saveMetadata.Filename.Length - (hasNumber ? 8 : 4));
+            string number = "";
+            int digits = 1;
+            if (hasNumber)
+            {
+                number = RegexHelperService.GetNumberFromString(saveMetadata.Filename);
+                digits = number.Count(char.IsDigit);
+            }
 
-            var list = data.FindAll(m => m.Filename.Contains(fileSearchName)).OrderBy(m => m.Id).ToList();
+            string fileSearchName = saveMetadata.Filename.Substring(0, saveMetadata.Filename.Length - (hasNumber ? (8 + digits - 1) : 4));
+
+            var list = data.FindAll(m => m.Filename.Substring(0, m.Filename.Length - 
+                (RegexHelperService.GetStringHasNumber(m.Filename) ? (8 + RegexHelperService.GetNumberFromString(m.Filename).Count(char.IsDigit) - 1) : 4)) == fileSearchName).OrderBy(m => m.Id).ToList();
+
+            if (list.Count == 1 && rename) return 1;
 
             for (int i = 0; i < list.Count; i++)
             {

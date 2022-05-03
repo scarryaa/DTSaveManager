@@ -12,6 +12,9 @@ namespace DTSaveManager.ViewModels
 {
     class TreeViewItemViewModel : ViewModelBase
     {
+        private bool _isReadOnly = true;
+        private bool _focusable = false;
+        private bool _isFocused = false;
         private bool _showMessage = false;
         private MessageType _currentMessageType;
         private string _messageText;
@@ -32,12 +35,45 @@ namespace DTSaveManager.ViewModels
             ClearMessageCommand = new RelayCommand(c => ClearMessage());
             RemoveCommand = new RelayCommand(c => RemoveMetadata());
             DuplicateCommand = new RelayCommand(c => DuplicateMetadata());
+            FocusTextBoxCommand = new RelayCommand(c => FocusTextBox());
             RenameMetadataCommand = new RelayCommand(c => RenameMetadata((string)c));
+            ChangeActiveCommand = new RelayCommand(c => ChangeActive());
         }
 
         public Action<TreeViewItemViewModel> removeAction { get; set; }
         public Action<TreeViewItemViewModel> duplicateAction { get; set; }
         public Action<TreeViewItemViewModel> renameMetadataAction { get; set; }
+        public Action<TreeViewItemViewModel> changeActiveAction { get; set; }
+
+        public bool IsReadOnly
+        {
+            get { return _isReadOnly; }
+            set
+            {
+                _isReadOnly = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool Focusable
+        {
+            get { return _focusable; }
+            set
+            {
+                _focusable = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsFocused
+        {
+            get { return _isFocused; }
+            set
+            {
+                _isFocused = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool ShowMessage
         {
@@ -155,7 +191,9 @@ namespace DTSaveManager.ViewModels
         public ICommand ClearMessageCommand { get; set; }
         public ICommand RemoveCommand { get; set; }
         public ICommand DuplicateCommand { get; set; }
+        public ICommand FocusTextBoxCommand { get; set; }
         public ICommand RenameMetadataCommand { get; set; }
+        public ICommand ChangeActiveCommand { get; set; }
 
         public void DisplayMessage(MessageType messageType, bool timeout)
         {
@@ -186,13 +224,31 @@ namespace DTSaveManager.ViewModels
                 duplicateAction.Invoke(this);
         }
 
+        private void ChangeActive()
+        {
+            if (changeActiveAction != null)
+                changeActiveAction.Invoke(this);
+        }
+
+        public void FocusTextBox()
+        {
+            IsReadOnly = false;
+            Focusable = true;
+            IsFocused = true;
+        }
+
         private void RenameMetadata(string newFilename)
         {
+            if (!Focusable) return;
             if (newFilename != Filename)
                 Filename = newFilename;
 
             if (renameMetadataAction != null)
                 renameMetadataAction.Invoke(this);
+
+            IsReadOnly = true;
+            IsFocused = false;
+            Focusable = false;
         }
     }
 }

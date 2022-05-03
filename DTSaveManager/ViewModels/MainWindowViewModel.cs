@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -17,9 +18,13 @@ namespace DTSaveManager.ViewModels
         private string _copyDirectoryPathText = "Copy path";
         private IClipboardService _clipboardService { get; }
 
+        private TimerService _timerService;
+
         public MainWindowViewModel(IClipboardService clipboardService)
         {
+            _timerService = new TimerService();
             _clipboardService = clipboardService;
+
             DemonTurfTreeViewModel = new TreeViewModel(isNeonMode: false);
             NeonSplashTreeViewModel = new TreeViewModel(isNeonMode: true);
 
@@ -29,6 +34,8 @@ namespace DTSaveManager.ViewModels
 
         public ICommand CopyDirectoryPathCommand { get; set; }
         public ICommand ChangeStyleCommand { get; set; }
+
+        public string WindowTitle { get; set; } = "Demon Turf Save Manager";
 
         public TreeViewModel DemonTurfTreeViewModel
         {
@@ -75,18 +82,12 @@ namespace DTSaveManager.ViewModels
             if (vmType == ViewModelType.DemonTurf) _clipboardService.SetText(DemonTurfTreeViewModel.GetDirectory());
             else if (vmType == ViewModelType.NeonSplash) _clipboardService.SetText(NeonSplashTreeViewModel.GetDirectory());
             CopyDirectoryPathText = "Path copied!";
-            Delay();
+            _timerService.DoTaskAfterDelay(3000, new Action(() => CopyDirectoryPathText = "Copy path"));
         }
 
         private void ChangeStyle()
         {
             ThemeService.ChangeTheme();
-        }
-
-        private async void Delay()
-        {
-            await Task.Delay(3000); 
-            CopyDirectoryPathText = "Copy path";
         }
     }
 }

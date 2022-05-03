@@ -6,18 +6,19 @@
              xmlns:i="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
              xmlns:s="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:DTSaveManager"
-             xmlns:views="clr-namespace:DTSaveManager.Views"
              xmlns:viewmodels="clr-namespace:DTSaveManager.ViewModels"
              xmlns:converters="clr-namespace:DTSaveManager.Converters"
              xmlns:enums="clr-namespace:DTSaveManager.DataTypes.Enums"
+             xmlns:attached="clr-namespace:DTSaveManager.Views.Attached_Properties"
              mc:Ignorable="d" 
              d:DesignHeight="40" d:DesignWidth="400">
 
     <UserControl.Resources>
+        <viewmodels:TreeViewItemViewModel x:Key="treeViewItemViewModel"/>
+        
         <converters:MultipleValuesConverter x:Key="multipleValuesConverter"/>
         <converters:MessageTypeToColorValueConverter x:Key="messageTypeToColorValueConverter"/>
         <converters:BooleanToVisibilityValueConverter x:Key="booleanToVisibilityValueConverter"/>
-        <viewmodels:TreeViewItemViewModel x:Key="treeViewItemViewModel"/>
     </UserControl.Resources>
 
     <Border Background="{DynamicResource DTForegroundSecondaryBrush}" CornerRadius="5" Padding="3" Margin="0 3 0 3">
@@ -34,13 +35,50 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <CheckBox FocusVisualStyle="{DynamicResource CheckBoxFocusVisualStyle1}" Style="{DynamicResource DefaultCheckBox}" Grid.Column="0" VerticalAlignment="Center" Name="Checkbox" Margin="5 3 1 0" IsChecked="{Binding Path=Active}"/>
-            <local:EditBox Grid.Column="1" x:Name="EditBox" Background="Transparent" Foreground="{DynamicResource TextBrush}"/>
+            <RadioButton Style="{DynamicResource RadioButtonBase}" Grid.Column="0" VerticalAlignment="Center" Margin="5 3 1 0" 
+                      IsChecked="{Binding Path=Active}" Command="{Binding ChangeActiveCommand}"/>
+            <local:EditBox d:Width="300" Grid.Column="1" x:Name="EditBox" Value="{Binding DisplayName}" Focusable="{Binding Focusable}" 
+                           Background="Transparent" Foreground="{DynamicResource TextBrush}">
+                <local:EditBox.Style>
+                    <Style BasedOn="{StaticResource BaseEditBox}" TargetType="{x:Type local:EditBox}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type local:EditBox}">
+                                    <TextBox x:Name="PART_TextBoxPart" Padding="1 1 0 0">
+                                        <TextBox.Style>
+                                            <Style BasedOn="{StaticResource BaseTextBox}" TargetType="{x:Type TextBox}">
+                                                <Setter Property="IsReadOnly" Value="{Binding IsReadOnly}"/>
+                                                <Setter Property="Text" Value="{Binding Value, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:EditBox}}}"/>
+                                                <Setter Property="attached:TextBoxProperties.IsFocused" Value="{Binding IsFocused}"/>
+                                            </Style>
+                                        </TextBox.Style>
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="LostFocus">
+                                                <i:InvokeCommandAction Command="{Binding RenameMetadataCommand}" 
+                                               CommandParameter="{Binding Path=Value, 
+                                                                  RelativeSource={RelativeSource AncestorType={x:Type local:EditBox}}}"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </local:EditBox.Style>
+            </local:EditBox>
 
-            <TextBlock Grid.Column="2" Text="{Binding MessageText}" Background="{DynamicResource DTForegroundSecondaryBrush}" Foreground="{Binding CurrentMessageType, Converter={StaticResource messageTypeToColorValueConverter}}" VerticalAlignment="Center" Padding="0 0 5 0" HorizontalAlignment="Right" Visibility="{Binding ShowMessage, Converter={StaticResource booleanToVisibilityValueConverter}}"/>
-            <Button Grid.Column="3" Style="{StaticResource BorderlessButton}" FontFamily="{StaticResource FontAwesome}" Content="&#xf14b;" Command="{Binding RenameCommand}" CommandParameter="{Binding Value}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
-            <Button Grid.Column="4" Style="{StaticResource BorderlessButton}" FontFamily="{StaticResource FontAwesome}" Content="&#xf24d;" Command="{Binding DuplicateCommand}" CommandParameter="{Binding Value}" DockPanel.Dock="Right" HorizontalAlignment="Right"/>
-            <ToggleButton Grid.Column="5" Style="{StaticResource ConfirmCancelBorderlessButton}" FontFamily="{StaticResource FontAwesome}" Content="&#x58;" Command="{Binding DisplayMessageCommand}" HorizontalAlignment="Right">
+            <TextBlock Grid.Column="2" Text="{Binding MessageText}" Background="{DynamicResource DTForegroundSecondaryBrush}" 
+                       Foreground="{Binding CurrentMessageType, Converter={StaticResource messageTypeToColorValueConverter}}" 
+                       VerticalAlignment="Center" Padding="0 0 5 0" HorizontalAlignment="Right" 
+                       Visibility="{Binding ShowMessage, Converter={StaticResource booleanToVisibilityValueConverter}}"/>
+            <Button Grid.Column="3" Style="{StaticResource BorderlessActionButton}" FontFamily="{StaticResource FontAwesome}" 
+                    Content="&#xf14b;" Command="{Binding FocusTextBoxCommand}"
+                    HorizontalAlignment="Right"/>
+            <Button Grid.Column="4" Style="{StaticResource BorderlessActionButton}" FontFamily="{StaticResource FontAwesome}" 
+                    Content="&#xf24d;" Command="{Binding DuplicateCommand}" HorizontalAlignment="Right"/>
+            <ToggleButton Grid.Column="5" Style="{StaticResource BorderlessDeleteToggleButton}" FontFamily="{StaticResource FontAwesome}" 
+                          Content="&#x58;" Command="{Binding DisplayMessageCommand}" HorizontalAlignment="Right">
+                
                 <ToggleButton.CommandParameter>
                     <MultiBinding Converter="{StaticResource multipleValuesConverter}">
                         <Binding Source="{x:Static enums:MessageType.DeletionMessage}"/>
@@ -51,6 +89,7 @@
                         </Binding>
                     </MultiBinding>
                 </ToggleButton.CommandParameter>
+                
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Unchecked">
                         <i:InvokeCommandAction Command="{Binding ClearMessageCommand}" CommandParameter="{x:Static enums:MessageType.DeletionMessage}"/>
@@ -59,7 +98,9 @@
                         <i:InvokeCommandAction Command="{Binding RemoveCommand}"/>
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
+                
             </ToggleButton>
+            
         </Grid>
     </Border>
 </UserControl>

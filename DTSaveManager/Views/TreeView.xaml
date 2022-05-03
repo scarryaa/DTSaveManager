@@ -8,7 +8,6 @@
              xmlns:viewmodels="clr-namespace:DTSaveManager.ViewModels"
              xmlns:converters="clr-namespace:DTSaveManager.Converters"
              xmlns:attached="clr-namespace:DTSaveManager.Views.Attached_Properties"
-             xmlns:syncfusion="http://schemas.syncfusion.com/wpf"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="400">
@@ -21,35 +20,18 @@
         <converters:BooleanToItemsSourceConverter x:Key="booleanToItemsSourceConverter"/>
     </UserControl.Resources>
 
-    <TreeView BorderBrush="Transparent" attached:TreeViewProperties.IsFocused="{Binding IsFocused}" ItemsSource="{Binding ItemsView}" Background="Transparent" Focusable="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+    <TreeView Margin="0 5 0 0" Style="{StaticResource BaseTreeView}" BorderBrush="Transparent" BorderThickness="0" attached:TreeViewProperties.IsFocused="{Binding IsFocused}" ItemContainerStyle="{StaticResource BaseTreeViewItem}" 
+              ItemsSource="{Binding ItemsView}" Background="Transparent" Focusable="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
         <i:Interaction.Triggers>
             <i:EventTrigger EventName="MouseDown">
                 <i:InvokeCommandAction Command="{Binding TreeViewMouseDownCommand}"/>
             </i:EventTrigger>
         </i:Interaction.Triggers>
-        
-        <TreeView.ItemContainerStyle>
-            <Style TargetType="{x:Type TreeViewItem}">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="IsExpanded"
-                        Value="True" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="TreeViewItem">
-                            <StackPanel>
-                                <ContentPresenter ContentSource="Header" />
-                                <ItemsPresenter Name="ItemsHost" />
-                            </StackPanel>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </TreeView.ItemContainerStyle>
 
         <TreeView.ItemTemplate>
             <DataTemplate>
-                <ContentControl Content="{Binding}"/>
+                <ContentControl Margin="5 0 10 0" Content="{Binding}"/>
             </DataTemplate>
         </TreeView.ItemTemplate>
     </TreeView>

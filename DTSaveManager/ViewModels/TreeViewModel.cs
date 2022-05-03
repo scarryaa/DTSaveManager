@@ -11,6 +11,7 @@ namespace DTSaveManager.ViewModels
     class TreeViewModel : ViewModelBase
     {
         private bool _isFocused;
+        private bool _active;
         private ObservableCollection<SaveMetadata> _saveMetadata;
         private ObservableCollection<TreeViewItemViewModel> _treeViewItemViewModels;
         private CollectionView _itemsView;
@@ -32,6 +33,15 @@ namespace DTSaveManager.ViewModels
         {
             get { return _isFocused; }
             set { _isFocused = value; OnPropertyChanged(); }
+        }
+
+        public bool Active
+        {
+            get { return _active; }
+            set { 
+                _active = value;
+                OnPropertyChanged();
+            }
         }
 
         public ObservableCollection<SaveMetadata> SaveMetadata
@@ -73,7 +83,8 @@ namespace DTSaveManager.ViewModels
                     Path = saveMetadata.Path,
                     removeAction = item => RemoveMetadata(saveMetadata),
                     duplicateAction = item => DuplicateMetadata(item, saveMetadata),
-                    renameMetadataAction = item => RenameMetadata(item, saveMetadata, item.Filename)
+                    renameMetadataAction = item => RenameMetadata(item, saveMetadata, item.Filename),
+                    changeActiveAction = item => ChangeActive(item, saveMetadata)
                 });
             }
 
@@ -91,6 +102,17 @@ namespace DTSaveManager.ViewModels
         {
             IsFocused = false;
             IsFocused = true;
+        }
+
+        private void ChangeActive(TreeViewItemViewModel treeViewItemViewModel, SaveMetadata saveMetadata)
+        {
+            foreach (TreeViewItemViewModel item in TreeViewItemViewModels)
+            {
+                item.Active = false;
+            }
+            treeViewItemViewModel.Active = true;
+            SaveMetadataService.Instance.ChangeActive(IsNeonMode, saveMetadata);
+            UpdateSaveMetadata(IsNeonMode);
         }
 
         private void RemoveMetadata(SaveMetadata saveMetadata)
@@ -113,7 +135,11 @@ namespace DTSaveManager.ViewModels
         private void RenameMetadata(TreeViewItemViewModel treeViewItemViewModel, SaveMetadata saveMetadata, string newFilename)
         {
             bool result = SaveMetadataService.Instance.Rename(IsNeonMode, saveMetadata, newFilename);
-            if (!result) treeViewItemViewModel.DisplayMessage(MessageType.FileExistsMessage, timeout: true);
+            if (!result)
+            {
+                treeViewItemViewModel.DisplayName = saveMetadata.Filename.Replace(".txt", "");
+                treeViewItemViewModel.DisplayMessage(MessageType.FileExistsMessage, timeout: true);
+            }
             else
             {
                 treeViewItemViewModel.ClearMessage();

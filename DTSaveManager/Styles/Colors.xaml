@@ -1,4 +1,14 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    
+    <!-- Window Button -->
+    <SolidColorBrush Color="#FFFFFF " x:Key="WindowCloseButtonForeground"/>
+    <!-- Window Button Hover -->
+    <SolidColorBrush Color="#D30A0A " x:Key="WindowCloseButtonHoverBrush"/>
+    <SolidColorBrush Color="#8E8E8E" x:Key="WindowButtonHoverBrush"/>
+    <!-- Window Button Pressed -->
+    <SolidColorBrush Color="#D13A3A " x:Key="WindowCloseButtonPressedBrush"/>
+    <SolidColorBrush Color="#9E9E9E" x:Key="WindowButtonPressedBrush"/>
+    
 </ResourceDictionary>

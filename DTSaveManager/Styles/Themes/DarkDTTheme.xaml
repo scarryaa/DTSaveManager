@@ -10,6 +10,7 @@
     <SolidColorBrush Color="#1D191E" x:Key="DTForegroundSecondaryBrush"/>
     <SolidColorBrush Color="#FFFFFF" x:Key="TextBrush"/>
     <SolidColorBrush Color="#C4C4C4" x:Key="InactiveTextBrush"/>
+    <SolidColorBrush Color="#37333F" x:Key="InactiveTabBrush"/>
 
     <!-- Button Hovers -->
     <SolidColorBrush Color="#FFBD7C " x:Key="InteractiveHoverBrush"/>
@@ -18,7 +19,7 @@
     <!-- Button Press -->
     <SolidColorBrush Color="#C18743" x:Key="InteractivePressedBrush"/>
     <SolidColorBrush Color="#F23E3E" x:Key="AlertPressBrush"/>
-    <SolidColorBrush Color="#999999" x:Key="DTMenuButtonPressedBrush"/>
+    <SolidColorBrush Color="#806D87" x:Key="DTMenuButtonPressedBrush"/>
 
     <!-- CheckBox -->
     <SolidColorBrush Color="#272233" x:Key="CheckBoxBackgroundBrush"/>
@@ -32,5 +33,8 @@
     <SolidColorBrush Color="#4C4363" x:Key="CheckBoxBackgroundHoverBrush"/>
     <SolidColorBrush Color="#2C2738" x:Key="CheckBoxBorderHoverBrush"/>
     <SolidColorBrush Color="#FFB056" x:Key="CheckBoxForegroundHoverBrush"/>
+
+    <!-- Scrollbar -->
+    <SolidColorBrush Color="#806D87" x:Key="DTScrollBarBrush"/>
 
 </ResourceDictionary>

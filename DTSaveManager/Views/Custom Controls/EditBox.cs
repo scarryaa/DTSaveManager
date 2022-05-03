@@ -14,17 +14,42 @@ namespace DTSaveManager
         public const string TEXT_BOX_TEMPLATE_PART_NAME = "PART_TextBoxPart";
 
         public bool IsEditing { get; set; } = false;
-        public bool CanBeEdited { get; set; } = true;
+        public string Value
+        {
+            get => (string)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
+        }
+
+        public bool ReadOnly
+        {
+            get => (bool)GetValue(ReadOnlyProperty);
+            set => SetValue(ReadOnlyProperty, value);
+        }
+
+        public new bool Focusable
+        {
+            get => (bool)GetValue(FocusableProperty);
+            set => SetValue(FocusableProperty, value);
+        }
 
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
                 "Value",
                 typeof(object),
-                typeof(EditBox));
+                typeof(EditBox),
+                new FrameworkPropertyMetadata(default(object), 
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public static readonly DependencyProperty ReadOnlyProperty =
             DependencyProperty.Register(
                 "ReadOnly",
+                typeof(bool),
+                typeof(EditBox),
+                new FrameworkPropertyMetadata(true));
+
+        public new static readonly DependencyProperty FocusableProperty =
+            DependencyProperty.Register(
+                "Focusable",
                 typeof(bool),
                 typeof(EditBox),
                 new FrameworkPropertyMetadata(true));
@@ -35,18 +60,6 @@ namespace DTSaveManager
                 typeof(bool),
                 typeof(EditBox),
                 new FrameworkPropertyMetadata(false));
-
-        public string Value
-        {
-            get => (string)GetValue(ValueProperty);
-            set => SetValue(ValueProperty, value);
-        }
-
-        public bool IsReadOnly
-        {
-            get => (bool)GetValue(ReadOnlyProperty);
-            set => SetValue(ReadOnlyProperty, value);
-        }
 
         public override void OnApplyTemplate()
         {
@@ -72,33 +85,20 @@ namespace DTSaveManager
             }
         }
 
-        protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
-        {
-            if (!IsEditing)
-            {
-                if (!e.Handled && CanBeEdited)
-                {
-                    IsReadOnly = false;
-                    IsEditing = true;
-                    (this.Template.FindName(TEXT_BOX_TEMPLATE_PART_NAME, this) as TextBox).Focus();
-                    (this.Template.FindName(TEXT_BOX_TEMPLATE_PART_NAME, this) as TextBox).SelectAll();
-                }
-            }
-        }
-
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            IsReadOnly = true;
+            ReadOnly = true;
             IsEditing = false;
+            ((TextBox)sender).GetBindingExpression(TextBox.TextProperty).UpdateTarget();
         }
 
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (!IsEditing)
+            if (!IsEditing && Focusable)
             {
-                if (!e.Handled && CanBeEdited)
+                if (!e.Handled)
                 {
-                    IsReadOnly = false;
+                    ReadOnly = false;
                     IsEditing = true;
                     (this.Template.FindName(TEXT_BOX_TEMPLATE_PART_NAME, this) as TextBox).Focus();
                     (this.Template.FindName(TEXT_BOX_TEMPLATE_PART_NAME, this) as TextBox).SelectAll();
