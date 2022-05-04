@@ -41,14 +41,13 @@
         
         <Grid Background="{DynamicResource DTBackgroundBrush}">
             <Grid.ColumnDefinitions>
-                <!--Window Icon-->
-                <ColumnDefinition Width="Auto" />
                 <!--Caption Bar-->
                 <ColumnDefinition Width="*" />
                 <!--Buttons-->
                 <ColumnDefinition Width="Auto"/>
                 <!--Spacing-->
                 <ColumnDefinition Width="20px"/>
+                <!--Buttons-->
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -61,34 +60,35 @@
             </Grid.RowDefinitions>
             
             <Rectangle Fill="{DynamicResource DTTitleBarBrush}" Width="Auto" Grid.ColumnSpan="10"/>
-            <Image Grid.Column="0" Width="20" Height="10" Margin="4"/>
+            <TextBlock FontWeight="DemiBold" FontSize="12" Grid.Column="0" Margin="8 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding WindowTitle}" 
+                       Foreground="{StaticResource DTTitleTextBrush}"/>
 
             <Button Width="23" Height="20" Content="&#xf186;" FontFamily="{StaticResource FontAwesome}" RenderOptions.EdgeMode="Aliased" 
-                    Foreground="{DynamicResource TextBrush}" Grid.Column="2" Command="{Binding ChangeStyleCommand}" Style="{StaticResource WindowButton}"/>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="4" 
+                    Foreground="{DynamicResource TextBrush}" Grid.Column="1" Command="{Binding ChangeStyleCommand}" Style="{StaticResource WindowButton}"/>
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="3" 
                     Click="OnMinimizeButtonClick" Style="{StaticResource WindowButton}">
                 <Path Data="M 0,14 H 14" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" StrokeThickness="1" 
                       Height="8" Stretch="Fill" Width="8" Margin="0 7 0 0"/>
             </Button>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="maximizeButton" Grid.Column="5" 
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="maximizeButton" Grid.Column="4" 
                     Click="OnMaximizeRestoreButtonClick" Style="{StaticResource WindowButton}">
                 <Path Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" 
                       StrokeThickness="1" Height="8" Stretch="Fill" Width="8"/>
             </Button>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="restoreButton" Grid.Column="5" 
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="restoreButton" Grid.Column="4" 
                     Click="OnMaximizeRestoreButtonClick" Style="{StaticResource WindowButton}">
                 <Path Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5" 
                       Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" StrokeThickness="1" Height="8" Stretch="Fill" 
                       Width="8"/>
             </Button>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="6" Click="OnCloseButtonClick" 
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="5" Click="OnCloseButtonClick" 
                     Style="{StaticResource WindowCloseButton}">
                 <Path Data="M12 12 L0 0 M12 0 L0 12" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" 
                       StrokeThickness="1" Height="8" Stretch="Fill" Width="8"/>
             </Button>
             
             <controls:LabelButton LabelText="{Binding CopyDirectoryPathText}" ButtonText="&#xf0c5;" Margin="0 2 6 0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" Panel.ZIndex="1"
-                                  Style="{StaticResource BorderlessButtonWithText}" Command="{Binding CopyDirectoryPathCommand}" 
+                                  Style="{StaticResource BaseLabelButton}" Command="{Binding CopyDirectoryPathCommand}" 
                                   CommandParameter="{Binding CurrentViewModel}" Content="&#xf0c5;" VerticalAlignment="Center" HorizontalAlignment="Right"/>
 
             <TabControl Style="{StaticResource BaseTabControl}" Background="{DynamicResource DTForegroundBrush}" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" 

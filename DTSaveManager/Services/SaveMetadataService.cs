@@ -207,8 +207,8 @@ namespace DTSaveManager.Services
                 }
 
                 // check if both folders exist
-                string _dtPath = _steamInstallPath + @"\userdata\" + _steamActiveUser + @"\" + "1747890" + @"\remote";
-                string _neonSplashPath = _steamInstallPath + @"\userdata\" + _steamActiveUser + @"\" + "1325900" + @"\remote";
+                string _dtPath = _steamInstallPath + @"\userdata\" + _steamActiveUser + @"\" + "1325900" + @"\remote";
+                string _neonSplashPath = _steamInstallPath + @"\userdata\" + _steamActiveUser + @"\" + "1747890" + @"\remote";
 
                 if (!Directory.Exists(_dtPath)) _dtPath = null;
                 if (!Directory.Exists(_neonSplashPath)) _neonSplashPath = null;

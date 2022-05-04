@@ -105,36 +105,48 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="BorderlessMenuButton" TargetType="{x:Type Button}" BasedOn="{StaticResource BorderlessButtonBase}">
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DTMenuButtonBrush}"/>
-            </Trigger>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource DTMenuButtonHoverBrush}"/>
-            </Trigger>
-            <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource DTMenuButtonPressedBrush}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="BorderlessButtonWithText" TargetType="{x:Type controls:LabelButton}">
+    <Style x:Key="BaseLabelButton" TargetType="{x:Type controls:LabelButton}">
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5 0 5 0"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource DTMenuButtonBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:LabelButton}">
                     <Border Background="{TemplateBinding Background}">
-                        <StackPanel Orientation="Horizontal">
-                            <Label Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" 
-                                   Content="{Binding LabelText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:LabelButton}}}"/>
-                            <Button x:Name="PART_Button" Content="{TemplateBinding Content}" FontFamily="{DynamicResource FontAwesome}" 
-                                    Style="{DynamicResource BorderlessMenuButton}" Margin="5 2 7 0" Command="{TemplateBinding Command}" CommandParameter="{TemplateBinding CommandParameter}"/>
-                        </StackPanel>
+                        <Button x:Name="PART_Main_Button" Command="{TemplateBinding Command}" CommandParameter="{TemplateBinding CommandParameter}">
+                            <Button.Style>
+                                <Style TargetType="{x:Type Button}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Label x:Name="PART_Label" FontSize="{TemplateBinding FontSize}" FontFamily="{TemplateBinding FontFamily}" 
+                                                           Content="{Binding LabelText, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type controls:LabelButton}}}"/>
+                                                    <TextBlock x:Name="PART_TextBlock" VerticalAlignment="Center" Text="{Binding Content, RelativeSource={RelativeSource Mode=FindAncestor, 
+                                                        AncestorType={x:Type controls:LabelButton}}}" FontFamily="{DynamicResource FontAwesome}" Margin="5 2 7 0"/>
+                                                </StackPanel>
+
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="PART_TextBlock" Property="Foreground" Value="{DynamicResource DTMenuButtonHoverBrush}"/>
+                                                        <Setter TargetName="PART_Label" Property="Foreground" Value="{DynamicResource DTMenuButtonHoverBrush}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsMouseOver" Value="False">
+                                                        <Setter TargetName="PART_TextBlock" Property="Foreground" Value="{DynamicResource DTMenuButtonBrush}"/>
+                                                        <Setter TargetName="PART_Label" Property="Foreground" Value="{DynamicResource DTMenuButtonBrush}"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsPressed" Value="True">
+                                                        <Setter TargetName="PART_TextBlock" Property="Foreground" Value="{DynamicResource DTMenuButtonPressedBrush}"/>
+                                                        <Setter TargetName="PART_Label" Property="Foreground" Value="{DynamicResource DTMenuButtonPressedBrush}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

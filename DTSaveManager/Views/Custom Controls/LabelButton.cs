@@ -10,8 +10,9 @@ using System.Windows.Input;
 
 namespace DTSaveManager.Views.Custom_Controls
 {
-    public class LabelButton : Label
+    public class LabelButton : Button
     {
+
         public static readonly DependencyProperty LabelTextProperty =
             DependencyProperty.Register(
                 "LabelText",
@@ -30,17 +31,18 @@ namespace DTSaveManager.Views.Custom_Controls
                 typeof(object),
                 typeof(LabelButton));
 
-        public static DependencyProperty CommandProperty =
+        public new static DependencyProperty CommandProperty =
             DependencyProperty.Register(
                 "Command",
                 typeof(ICommand),
                 typeof(LabelButton));
 
-        public static DependencyProperty CommandParameterProperty =
+        public new static DependencyProperty CommandParameterProperty =
             DependencyProperty.Register(
                 "CommandParameter",
                 typeof(object),
                 typeof(LabelButton));
+
 
         public string LabelText
         {
@@ -60,13 +62,13 @@ namespace DTSaveManager.Views.Custom_Controls
             set => SetValue(ButtonTextProperty, value);
         }
 
-        public ICommand Command
+        public new ICommand Command
         {
             get => (ICommand)GetValue(CommandProperty);
             set => SetValue(CommandProperty, value);
         }
 
-        public object CommandParameter
+        public new object CommandParameter
         {
             get => GetValue(CommandProperty);
             set => SetValue(CommandProperty, value);

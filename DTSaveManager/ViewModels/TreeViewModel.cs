@@ -138,7 +138,7 @@ namespace DTSaveManager.ViewModels
             if (!result)
             {
                 treeViewItemViewModel.DisplayName = saveMetadata.Filename.Replace(".txt", "");
-                treeViewItemViewModel.DisplayMessage(MessageType.FileExistsMessage, timeout: true);
+                if (saveMetadata.Filename.Replace(".txt", "") != newFilename) treeViewItemViewModel.DisplayMessage(MessageType.FileExistsMessage, timeout: true);
             }
             else
             {

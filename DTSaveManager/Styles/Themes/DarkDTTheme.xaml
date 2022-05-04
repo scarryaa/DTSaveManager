@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush Color="#0E0B0F" x:Key="DTTitleBarBrush"/>
+    <SolidColorBrush Color="#514856" x:Key="DTTitleTextBrush"/>
     <SolidColorBrush Color="#131216" x:Key="DTBackgroundBrush"/>
     <SolidColorBrush Color="#2B242D" x:Key="DTForegroundBrush"/>
     <SolidColorBrush Color="#EAEAEA" x:Key="DTMenuButtonBrush"/>
