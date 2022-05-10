@@ -1,29 +1,42 @@
-﻿using System;
+﻿using DTSaveManager.DataTypes.Enums;
+using System;
 using System.Windows;
 
 namespace DTSaveManager.Services
 {
     public static class ThemeService
     {
+        private static ThemeType _currentTheme = (ThemeType)Enum.Parse(typeof(ThemeType), ConfigService.GetActiveTheme());
+        private static string themePrefix = "pack://application:,,,../../Styles/Themes/";
+
         public static ResourceDictionary ThemeDictionary
         {
-            // You could probably get it via its name with some query logic as well.
             get { return Application.Current.Resources; }
         }
 
         public static void ChangeTheme()
         {
-            if (ThemeDictionary.MergedDictionaries[0].Source.OriginalString == "Styles/Themes/DarkDTTheme.xaml" || 
-                ThemeDictionary.MergedDictionaries[0].Source.OriginalString == "pack://application:,,,../../Styles/Themes/DarkDTTheme.xaml")
-            {
-                ThemeDictionary.MergedDictionaries.RemoveAt(0);
-                ThemeDictionary.MergedDictionaries.Insert(0, new ResourceDictionary() { Source = new Uri("pack://application:,,,../../Styles/Themes/LightDTTheme.xaml") });
-            }
-            else
-            {
-                ThemeDictionary.MergedDictionaries.RemoveAt(0);
-                ThemeDictionary.MergedDictionaries.Insert(0, new ResourceDictionary() { Source = new Uri("pack://application:,,,../../Styles/Themes/DarkDTTheme.xaml") });
-            }
+            if (_currentTheme == ThemeType.DarkTheme) SetTheme(ThemeType.LightTheme);
+            else SetTheme(ThemeType.DarkTheme);
+        }
+
+        public static void SetTheme(ThemeType themeType)
+        {
+            ThemeDictionary.MergedDictionaries.RemoveAt(0);
+            ThemeDictionary.MergedDictionaries.Insert(0,
+                new ResourceDictionary() { Source = new Uri(themePrefix + (ThemeType)Enum.Parse(typeof(ThemeType), themeType.ToString()) + ".xaml") });
+            _currentTheme = themeType;
+
+            ConfigService.SetActiveTheme(themeType);
+        }
+        public static ThemeType GetCurrentTheme()
+        {
+            return _currentTheme;
+        }
+
+        public static object FindResource(string resourceName)
+        {
+            return ThemeDictionary.MergedDictionaries[0].Values;
         }
     }
 }

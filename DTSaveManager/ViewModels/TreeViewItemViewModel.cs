@@ -2,18 +2,14 @@
 using DTSaveManager.Services;
 using DTSaveManager.ViewModels.Base;
 using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows;
 using System.Windows.Input;
 
 namespace DTSaveManager.ViewModels
 {
     class TreeViewItemViewModel : ViewModelBase
     {
-        private bool _isReadOnly = true;
-        private bool _focusable = false;
+        private bool _showPopup = true;
+        private bool _isEditing = false;
         private bool _isFocused = false;
         private bool _showMessage = false;
         private MessageType _currentMessageType;
@@ -38,33 +34,35 @@ namespace DTSaveManager.ViewModels
             FocusTextBoxCommand = new RelayCommand(c => FocusTextBox());
             RenameMetadataCommand = new RelayCommand(c => RenameMetadata((string)c));
             ChangeActiveCommand = new RelayCommand(c => ChangeActive());
+            DisplayPopupCommand = new RelayCommand(c => DisplayPopup());
+            HidePopupCommand = new RelayCommand(c => HidePopup());
         }
 
         public Action<TreeViewItemViewModel> removeAction { get; set; }
         public Action<TreeViewItemViewModel> duplicateAction { get; set; }
-        public Action<TreeViewItemViewModel> renameMetadataAction { get; set; }
+        public Func<TreeViewItemViewModel, string, bool> renameMetadataAction { get; set; }
         public Action<TreeViewItemViewModel> changeActiveAction { get; set; }
+        public Action<object> showPopupAction { get; set; }
+        public Action<object> hidePopupAction { get; set; }
 
-        public bool IsReadOnly
+        public bool ShowPopup
         {
-            get { return _isReadOnly; }
+            get { return _showPopup; }
             set
             {
-                _isReadOnly = value;
+                _showPopup = value;
                 OnPropertyChanged();
             }
         }
-
-        public bool Focusable
+        public bool IsEditing
         {
-            get { return _focusable; }
+            get { return _isEditing; }
             set
             {
-                _focusable = value;
+                _isEditing = value;
                 OnPropertyChanged();
             }
         }
-
         public bool IsFocused
         {
             get { return _isFocused; }
@@ -193,7 +191,11 @@ namespace DTSaveManager.ViewModels
         public ICommand DuplicateCommand { get; set; }
         public ICommand FocusTextBoxCommand { get; set; }
         public ICommand RenameMetadataCommand { get; set; }
+        public ICommand RadioButtonLeftMouseDownCommand { get; set; }
+        public ICommand RadioButtonLeftMouseUpCommand { get; set; }
         public ICommand ChangeActiveCommand { get; set; }
+        public ICommand DisplayPopupCommand { get; set; }
+        public ICommand HidePopupCommand { get; set; }
 
         public void DisplayMessage(MessageType messageType, bool timeout)
         {
@@ -230,25 +232,36 @@ namespace DTSaveManager.ViewModels
                 changeActiveAction.Invoke(this);
         }
 
+        private void DisplayPopup()
+        {
+            ShowPopup = true;
+        }
+
+        private void HidePopup()
+        {
+            ShowPopup = false;
+        }
+
         public void FocusTextBox()
         {
-            IsReadOnly = false;
-            Focusable = true;
+            IsEditing = true;
             IsFocused = true;
         }
 
-        private void RenameMetadata(string newFilename)
+        private void RenameMetadata(string newFileName)
         {
-            if (!Focusable) return;
-            if (newFilename != Filename)
-                Filename = newFilename;
+            newFileName += ".txt";
+            bool success = false;
+            if (!IsEditing) return;
 
             if (renameMetadataAction != null)
-                renameMetadataAction.Invoke(this);
+                success = (bool)renameMetadataAction.Invoke(this, newFileName);
 
-            IsReadOnly = true;
+            if (newFileName != Filename && success)
+                Filename = newFileName;
+
+            IsEditing = false;
             IsFocused = false;
-            Focusable = false;
         }
     }
 }

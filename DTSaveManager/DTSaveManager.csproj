@@ -1,13 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+    <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+		<UseWPF>true</UseWPF>
+	    <!-- To publish just a single *.exe file -->
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>true</SelfContained>
+	    <!-- Specify for which runtime you want to publish -->
+	    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+		<PublishReadyToRun>true</PublishReadyToRun>
+	    <!-- Since NET 5 specify this if you want to also pack all external *.dll to your file -->
+	    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	    <!-- Add trimming for a smaller file size if possible-->
+	    <ApplicationManifest>app.manifest</ApplicationManifest>
+	    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    </PropertyGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <Compile Remove="EditBoxAdorner.cs" />
   </ItemGroup>
 
@@ -16,6 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />

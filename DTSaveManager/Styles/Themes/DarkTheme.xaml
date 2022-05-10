@@ -38,4 +38,7 @@
     <!-- Scrollbar -->
     <SolidColorBrush Color="#806D87" x:Key="DTScrollBarBrush"/>
 
+    <!-- Active Border -->
+    <SolidColorBrush Color="#3C2F4C" x:Key="ActiveSaveFileBrush"/>
+
 </ResourceDictionary>

@@ -68,6 +68,9 @@
                             <Setter TargetName="PART_Border" Property="Margin" Value="-2 4 0 -2"/>
                             <Setter TargetName="PART_Border" Property="Padding" Value="8 4 8 4"/>
                         </Trigger>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

@@ -14,8 +14,12 @@ namespace DTSaveManager.Services
     {
         private string _dtSaveDirectory;
         private string _neonSaveDirectory;
-        public static List<SaveMetadata> DtSaveMetadata = new List<SaveMetadata>();
-        public static List<SaveMetadata> NeonSplashSaveMetadata = new List<SaveMetadata>();
+        private const string DTSM_FOLDER_NAME = "_dtsm";
+        private const string SAVE_FILE_NAME = "DTSaveData.txt";
+        public static Dictionary<string, int> DtSaveMetadata = new Dictionary<string, int>();
+        public static Dictionary<string, int> NeonSplashSaveMetadata = new Dictionary<string, int>();
+        public static string DtActiveFile;
+        public static string NeonSplashActiveFile;
 
         static SaveMetadataService() { Instance = new SaveMetadataService(); }
 
@@ -30,137 +34,14 @@ namespace DTSaveManager.Services
             if (_dtSaveDirectory != null)
             {
                 InitializeFiles(false, _dtSaveDirectory, DtSaveMetadata);
-                CopyActiveFiles(_dtSaveDirectory, DtSaveMetadata);
-                SetActive(_dtSaveDirectory, DtSaveMetadata);
+                CopyActiveFile(_dtSaveDirectory, DtActiveFile);
             }
 
             if (_neonSaveDirectory != null)
             {
                 InitializeFiles(true, _neonSaveDirectory, NeonSplashSaveMetadata);
-                CopyActiveFiles(_neonSaveDirectory, NeonSplashSaveMetadata);
-                SetActive(_neonSaveDirectory, NeonSplashSaveMetadata);
+                CopyActiveFile(_neonSaveDirectory, NeonSplashActiveFile);
             }
-        }
-
-        public List<SaveMetadata> GetSaveMetadata(bool isNeonMode)
-        {
-            return isNeonMode ? NeonSplashSaveMetadata : DtSaveMetadata;
-        }
-
-        public bool Rename(bool isNeonMode, SaveMetadata saveMetadata, string newFilename)
-        {
-            string oldPath = saveMetadata.Path;
-            if (CheckIfFileExists(newFilename, isNeonMode))
-            {
-                return false;
-            }
-
-            saveMetadata.Path = saveMetadata.Path.Replace(saveMetadata.Filename, newFilename + ".txt");
-            saveMetadata.Filename = newFilename + ".txt";
-            saveMetadata.Id = ReturnCurrentFileNumber(saveMetadata, isNeonMode, rename: true);
-
-            File.Copy(oldPath, saveMetadata.Path, true);
-            File.WriteAllText(saveMetadata.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(saveMetadata));
-            RemoveMetadataFileOnly(isNeonMode, oldPath);
-            return true;
-        }
-
-        public void RemoveMetadata(bool isNeonMode, SaveMetadata saveMetadata)
-        {
-            if (!isNeonMode)
-            {
-                saveMetadata = DtSaveMetadata.First(m => m.Filename == saveMetadata.Filename);
-                DtSaveMetadata.Remove(saveMetadata);
-            }
-            else
-            {
-                saveMetadata = NeonSplashSaveMetadata.First(m => m.Filename == saveMetadata.Filename);
-                NeonSplashSaveMetadata.Remove(saveMetadata);
-            }
-
-            File.Delete(saveMetadata.Path);
-            File.Delete(saveMetadata.Path.Replace(".txt", ".dtsm"));
-        }
-
-        public void RemoveMetadataFileOnly(bool isNeonMode, string path)
-        {
-            File.Delete(path);
-            File.Delete(path.Replace(".txt", ".dtsm"));
-        }
-
-        public SaveMetadata DuplicateMetadata(bool isNeonMode, SaveMetadata saveMetadata)
-        {
-            bool fileAlreadyExists = false;
-            int newId = ReturnCurrentFileNumber(saveMetadata, isNeonMode: isNeonMode);
-            string newFileName;
-
-            saveMetadata = isNeonMode ? NeonSplashSaveMetadata.First(m => m.Filename == saveMetadata.Filename) :
-                saveMetadata = DtSaveMetadata.First(m => m.Filename == saveMetadata.Filename);
-            newFileName = saveMetadata.Filename.Replace($".txt", $"").Replace($" ({saveMetadata.Id})", $"") + $" ({newId}).txt";
-            fileAlreadyExists = isNeonMode ? NeonSplashSaveMetadata.Any(m => m.Filename == newFileName) :
-                DtSaveMetadata.Any(m => m.Filename == newFileName);
-
-            if (fileAlreadyExists || newId == 0) return null;
-
-            SaveMetadata newSaveMetadata = new SaveMetadata();
-            newSaveMetadata.Filename = newFileName;
-            newSaveMetadata.Path = isNeonMode ? _neonSaveDirectory + "\\_dtsm\\" + newFileName : _dtSaveDirectory + "\\_dtsm\\" + newFileName;
-            newSaveMetadata.Active = false;
-            newSaveMetadata.Id = newId;
-
-            if (!isNeonMode) DtSaveMetadata.Add(newSaveMetadata);
-            else NeonSplashSaveMetadata.Add(newSaveMetadata);
-            File.Copy(saveMetadata.Path, newSaveMetadata.Path, true);
-            File.WriteAllText(newSaveMetadata.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(newSaveMetadata));
-            return newSaveMetadata;
-        }
-
-        public void ChangeActive(bool isNeonMode, SaveMetadata saveMetadata)
-        {
-            if (!isNeonMode)
-            {
-                saveMetadata = DtSaveMetadata.First(m => m.Filename == saveMetadata.Filename);
-                foreach (SaveMetadata item in DtSaveMetadata)
-                {
-                    if (item.Active != false)
-                    {
-                        item.Active = false;
-                        File.WriteAllText(item.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(item));
-                    }
-                }
-                saveMetadata.Active = true;
-                File.WriteAllText(saveMetadata.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(saveMetadata));
-                File.Copy(_dtSaveDirectory + @"\_dtsm\" + saveMetadata.Filename, _dtSaveDirectory + "\\DTSaveData.txt", true);
-            }
-            else
-            {
-                saveMetadata = NeonSplashSaveMetadata.First(m => m.Filename == saveMetadata.Filename);
-                foreach (SaveMetadata item in NeonSplashSaveMetadata)
-                {
-                    if (item.Active != false)
-                    {
-                        item.Active = false;
-                        File.WriteAllText(item.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(item));
-                    }
-                }
-
-                saveMetadata.Active = true;
-                File.WriteAllText(saveMetadata.Path.Replace(".txt", ".dtsm"), JsonConvert.SerializeObject(saveMetadata));
-                File.Copy(_neonSaveDirectory + @"\_dtsm\" + saveMetadata.Filename, _neonSaveDirectory + "\\DTSaveData.txt", true);
-            }
-        }
-
-        public SaveMetadata FindSaveMetadataByFilename(bool isNeonMode, string filename)
-        {
-            if (isNeonMode)
-                return NeonSplashSaveMetadata.First(m => m.Filename == filename);
-            else
-                return DtSaveMetadata.First(m => m.Filename == filename);
-        }
-
-        public string GetDirectory(bool isNeonMode)
-        {
-            return isNeonMode ? _neonSaveDirectory : _dtSaveDirectory;
         }
 
         private (string, string) GetPathFromRegistryKeys()
@@ -218,7 +99,7 @@ namespace DTSaveManager.Services
             catch
             {
                 // check for GOG
-                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\LocalLow\Fabraz\Demon Turf\DTSaveData.txt"))
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + $@"\..\LocalLow\Fabraz\Demon Turf\{SAVE_FILE_NAME}"))
                 {
                     return (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\LocalLow\Fabraz\Demon Turf\", null);
                 }
@@ -227,8 +108,8 @@ namespace DTSaveManager.Services
                     MessageBox.Show("Could not find Demon Turf install directory. Please ensure the game is installed, or select a folder manually.");
                     OpenFileDialog openFileDialog = new OpenFileDialog();
                     {
-                        openFileDialog.Filter = "DTSaveData.txt|*.txt";
-                        openFileDialog.FileName = "DTSaveData.txt";
+                        openFileDialog.Filter = $"{SAVE_FILE_NAME}| *.txt";
+                        openFileDialog.FileName = SAVE_FILE_NAME;
                         openFileDialog.FilterIndex = 1;
 
                         if (openFileDialog.ShowDialog() == true)
@@ -244,109 +125,169 @@ namespace DTSaveManager.Services
             }
         }
 
-        private void InitializeFiles(bool neonMode, string saveDirectory, List<SaveMetadata> saveMetadataList)
+        private void InitializeFiles(bool neonMode, string saveDirectory, Dictionary<string, int> saveMetadataList)
         {
-            // move files to _dtsm folder
-            Directory.CreateDirectory(saveDirectory + @"\_dtsm");
+            // check if _dtsm dir exists
+            if (!Directory.Exists(saveDirectory + $@"\{DTSM_FOLDER_NAME}"))
+                Directory.CreateDirectory(saveDirectory + @"\_dtsm");
 
-            foreach (string file in Directory.EnumerateFiles(saveDirectory, "*.txt"))
-            {
-                string fileName = Path.GetFileName(file);
+            // check if DTSaveData exists and is in the _dtsm folder
+            if (File.Exists(saveDirectory + $@"\{SAVE_FILE_NAME}") && !File.Exists(saveDirectory + $@"\{DTSM_FOLDER_NAME}" + $@"\{SAVE_FILE_NAME}"))
+                File.Copy(saveDirectory + $@"\{SAVE_FILE_NAME}", saveDirectory + $@"\{DTSM_FOLDER_NAME}" + $@"\{SAVE_FILE_NAME}");
 
-                if (file.Contains(@"\DTSaveData.txt"))
-                {
-                    if (!File.Exists(saveDirectory + @"\_dtsm\" + fileName))
-                    {
-                        File.Copy(file, saveDirectory + @"\_dtsm\" + fileName);
-                    }
-                }
-                else if (!file.Contains(@"\output_log.txt"))
-                {
-                    File.Move(file, saveDirectory + @"\_dtsm\" + fileName);
-                }
-            }
             // scan _dtsm folder
-            foreach (string file in Directory.EnumerateFiles(saveDirectory + "\\_dtsm", "*.txt"))
+            foreach (string file in Directory.EnumerateFiles(saveDirectory + $@"\{DTSM_FOLDER_NAME}", "*.txt"))
             {
                 string filename = Path.GetFileName(file);
-
-                // if inactive DTSaveData.txt exists, ignore it
-                string jsonPath = filename.Replace(".txt", ".dtsm");
-                SaveMetadata data;
-
-                if (File.Exists(saveDirectory + @"\_dtsm\" + jsonPath))
-                {
-                    var x = File.ReadAllText(saveDirectory + @"\_dtsm\" + jsonPath);
-                    data = JsonConvert.DeserializeObject<SaveMetadata>(x);
-                }
-                else
-                {
-                    data = new SaveMetadata()
-                    {
-                        Filename = filename,
-                        Path = saveDirectory + @"\_dtsm\" + filename,
-                        Active = filename == "DTSaveData.txt"
-                    };
-                    int.TryParse(RegexHelperService.GetNumberFromString(filename) ?? "1", out int idResult);
-                    data.Id = idResult;
-                    File.WriteAllText(saveDirectory + @"\_dtsm\" + jsonPath, JsonConvert.SerializeObject(data));
-                }
-                saveMetadataList.Add(data);
+                int.TryParse(RegexHelperService.GetNumberFromString(filename), out int idResult);
+                if (idResult == 0) idResult = 1;
+                saveMetadataList.Add(filename, idResult);
             }
 
-            if (saveMetadataList.Where(m => m.Active == true).ToList().Count != 1)
+            // check for saved active files, if not found, set to default
+            (string, string) files = ConfigService.GetActiveFiles();
+            if (files.Item1 != null && files.Item2 != null)
             {
-                if (File.Exists(saveDirectory + @"\DTSaveData.txt"))
-                {
-                    saveMetadataList.Where(m => m.Filename == "DTSaveData.txt").Single().Active = true;
-                }
+                DtActiveFile = files.Item1;
+                NeonSplashActiveFile = files.Item2;
+            }
+            else
+            {
+                DtActiveFile = SAVE_FILE_NAME;
+                NeonSplashActiveFile = SAVE_FILE_NAME;
             }
         }
 
-        private void CopyActiveFiles(string saveDirectory, List<SaveMetadata> saveMetadataList)
+        private void CopyActiveFile(string saveDirectory, string activeFile)
         {
-            foreach (SaveMetadata saveMetadata in saveMetadataList)
-            {
-                if (saveMetadata.Active == true)
-                {
-                    File.Copy(saveDirectory + "\\DTSaveData.txt", saveDirectory + @"\_dtsm\" + saveMetadata.Filename, true);
-                }
-            }
+            // copy active files on program open, ensuring data is up to date
+            File.Copy(saveDirectory + $@"\{SAVE_FILE_NAME}", saveDirectory + $@"\{DTSM_FOLDER_NAME}\" + activeFile, true);
         }
 
-        private void SetActive(string saveDirectory, List<SaveMetadata> saveMetadataList)
+        public Dictionary<string, int> GetSaveMetadataDict(bool isNeonMode)
         {
-            if (saveMetadataList.Where(m => m.Active == true).ToList().Count != 1)
-            {
-                if (File.Exists(saveDirectory + @"\DTSaveData.txt"))
-                {
-                    saveMetadataList.Where(m => m.Filename == "DTSaveData.txt").First().Active = true;
-                }
-            }
+            return isNeonMode ? NeonSplashSaveMetadata : DtSaveMetadata;
         }
 
-        private int ReturnCurrentFileNumber(SaveMetadata saveMetadata, bool isNeonMode, bool rename = false)
+        public string GetFilePath(bool isNeonMode, string fileName)
         {
-            List<SaveMetadata> data = isNeonMode ? NeonSplashSaveMetadata : DtSaveMetadata;
-            bool hasNumber = RegexHelperService.GetStringHasNumber(saveMetadata.Filename);
+            return isNeonMode ? _neonSaveDirectory + $@"\{DTSM_FOLDER_NAME}\" + fileName : 
+                _dtSaveDirectory + $@"\{DTSM_FOLDER_NAME}\" + fileName;
+        }
+
+        public string GetActiveFile(bool isNeonMode)
+        {
+            return isNeonMode ? NeonSplashActiveFile : DtActiveFile;
+        }
+
+        public void SetActiveFile(bool isNeonMode, string fileName)
+        {
+            if (isNeonMode)
+            {
+                CopyActiveFile(_neonSaveDirectory, NeonSplashActiveFile);
+                NeonSplashActiveFile = fileName;
+                File.Copy(_neonSaveDirectory + $@"\{DTSM_FOLDER_NAME}\" + fileName, _neonSaveDirectory + $@"\{SAVE_FILE_NAME}", true);
+            }
+            else
+            {
+                CopyActiveFile(_dtSaveDirectory, DtActiveFile);
+                DtActiveFile = fileName;
+                File.Copy(_dtSaveDirectory + $@"\{DTSM_FOLDER_NAME}\" + fileName, _dtSaveDirectory + $@"\{SAVE_FILE_NAME}", true);
+            }
+                
+            ConfigService.SetActiveFiles((DtActiveFile, NeonSplashActiveFile));
+        }
+
+        public bool RenameFile(bool isNeonMode, string fileName, string newFileName)
+        {
+            if (CheckIfFileExists(newFileName, isNeonMode)) return false;
+
+            var isValid = !string.IsNullOrEmpty(newFileName.Replace(".txt", "")) &&
+              newFileName.IndexOfAny(Path.GetInvalidFileNameChars()) < 0;
+
+            if (!isValid) return false;
+
+            if (isNeonMode)
+            {
+                NeonSplashSaveMetadata.Remove(fileName);
+                NeonSplashSaveMetadata.Add(newFileName, ReturnCurrentFileNumber(newFileName, isNeonMode, rename: true));
+            }
+            else
+            {
+                DtSaveMetadata.Remove(fileName);
+                DtSaveMetadata.Add(newFileName, ReturnCurrentFileNumber(newFileName, isNeonMode, rename: true));
+            }
+
+            string oldPath = GetFilePath(isNeonMode, fileName);
+            File.Move(oldPath, GetFilePath(isNeonMode, newFileName));
+            File.Delete(oldPath);
+
+            return true;
+        }
+
+        public void RemoveFile(bool isNeonMode, string fileName)
+        {
+            if (isNeonMode) NeonSplashSaveMetadata.Remove(fileName);
+            else DtSaveMetadata.Remove(fileName);
+            
+            File.Delete(GetFilePath(isNeonMode, fileName));
+        }
+
+        public KeyValuePair<string, int>? DuplicateFile(bool isNeonMode, string fileName)
+        {
+            int newId = ReturnCurrentFileNumber(fileName, isNeonMode);
+            string newFileName;
+
+            if (isNeonMode)
+            {
+                newFileName = fileName.Replace($".txt", $"").Replace($" ({NeonSplashSaveMetadata[fileName]})", $"") + $" ({newId}).txt";
+                if (NeonSplashSaveMetadata.Any(m => m.Key == newFileName)) return null;
+                NeonSplashSaveMetadata.Add(newFileName, newId);
+            }
+            else
+            {
+                newFileName = fileName.Replace($".txt", $"").Replace($" ({DtSaveMetadata[fileName]})", $"") + $" ({newId}).txt";
+                if (DtSaveMetadata.Any(m => m.Key == newFileName)) return null;
+                DtSaveMetadata.Add(newFileName, newId);
+            }
+
+            File.Copy(GetFilePath(isNeonMode, fileName), GetFilePath(isNeonMode, newFileName), true);
+            return new KeyValuePair<string, int>(newFileName, newId);
+        }
+
+        public KeyValuePair<string, int> FindSaveMetadataByFilename(bool isNeonMode, string filename)
+        {
+            if (isNeonMode) return NeonSplashSaveMetadata.First(m => m.Key == filename);
+            else return DtSaveMetadata.First(m => m.Key == filename);
+        }
+
+        public string GetDirectory(bool isNeonMode)
+        {
+            return isNeonMode ? _neonSaveDirectory : _dtSaveDirectory;
+        }
+
+        private int ReturnCurrentFileNumber(string fileName, bool isNeonMode, bool rename = false)
+        {
+            Dictionary<string, int> data = isNeonMode ? NeonSplashSaveMetadata : DtSaveMetadata;
+            bool hasNumber = RegexHelperService.GetStringHasNumber(fileName);
             string number = "";
             int digits = 1;
             if (hasNumber)
             {
-                number = RegexHelperService.GetNumberFromString(saveMetadata.Filename);
+                number = RegexHelperService.GetNumberFromString(fileName);
                 digits = number.Count(char.IsDigit);
             }
 
-            string fileSearchName = saveMetadata.Filename.Substring(0, saveMetadata.Filename.Length - (hasNumber ? (8 + digits - 1) : 4));
+            string fileSearchName = fileName.Substring(0, fileName.Length - (hasNumber ? (8 + digits - 1) : 4));
 
-            var list = data.FindAll(m => m.Filename.Substring(0, m.Filename.Length - 
-                (RegexHelperService.GetStringHasNumber(m.Filename) ? (8 + RegexHelperService.GetNumberFromString(m.Filename).Count(char.IsDigit) - 1) : 4)) == fileSearchName).OrderBy(m => m.Id).ToList();
+            var list = data.Where(m => m.Key.Substring(0, m.Key.Length - 
+                (RegexHelperService.GetStringHasNumber(m.Key) ? (8 + RegexHelperService.GetNumberFromString(m.Key).Count(char.IsDigit) - 1) : 4)) == fileSearchName).OrderBy(m => m.Value).ToList();
 
             if (list.Count == 1 && rename) return 1;
 
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Id != i + 1) return i + 1;
+                if (list[i].Value != i + 1) return i + 1;
             }
 
             return list.Count + 1;
@@ -354,8 +295,8 @@ namespace DTSaveManager.Services
 
         private bool CheckIfFileExists(string newFilename, bool isNeonMode)
         {
-            List<SaveMetadata> data = isNeonMode ? NeonSplashSaveMetadata : DtSaveMetadata;
-            var list = data.FindAll(m => m.Filename == newFilename + ".txt").OrderBy(m => m.Id).ToList();
+            Dictionary<string, int> data = isNeonMode ? NeonSplashSaveMetadata : DtSaveMetadata;
+            var list = data.Where(m => m.Key == newFilename).OrderBy(m => m.Value).ToList();
             if (list.Count > 0) return true;
             else return false;
         }

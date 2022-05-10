@@ -4,8 +4,11 @@
 
     <FontFamily x:Key="FontAwesome">pack://application:,,,/Fonts/#Font Awesome 6 Free Solid</FontFamily>
 
+    <system:Double x:Key="FontSizeVerySmall">8</system:Double>
     <system:Double x:Key="FontSizeSmall">12</system:Double>
     <system:Double x:Key="FontSizeRegular">14</system:Double>
+    <system:Double x:Key="FontSizeLarge">16</system:Double>
+    <system:Double x:Key="FontSizeXLarge">18</system:Double>
 
     <Style TargetType="{x:Type Control}" x:Key="BaseStyle">
         <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}"/>
@@ -16,9 +19,6 @@
     </Style>
 
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseStyle}"/>
-    <Style TargetType="{x:Type Label}" BasedOn="{StaticResource BaseStyle}"/>
-    <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource BaseStyle}"/>
-    <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BaseTextBlockStyle}"/>
     <Style TargetType="{x:Type ListView}" BasedOn="{StaticResource BaseStyle}"/>
 
 </ResourceDictionary>

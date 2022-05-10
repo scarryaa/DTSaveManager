@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using DTSaveManager.DataTypes.Enums;
 using DTSaveManager.Services;
 using DTSaveManager.Services.Interfaces;
@@ -12,6 +9,7 @@ namespace DTSaveManager.ViewModels
 {
     class MainWindowViewModel : ViewModelBase
     {
+        private ThemeType _currentTheme = ThemeService.GetCurrentTheme();
         private TreeViewModel _demonTurfTreeViewModel;
         private TreeViewModel _neonSplashTreeViewModel;
         private ViewModelType _currentViewModel;
@@ -22,6 +20,7 @@ namespace DTSaveManager.ViewModels
 
         public MainWindowViewModel(IClipboardService clipboardService)
         {
+            ThemeService.SetTheme(_currentTheme);
             _timerService = new TimerService();
             _clipboardService = clipboardService;
 
@@ -36,6 +35,16 @@ namespace DTSaveManager.ViewModels
         public ICommand ChangeStyleCommand { get; set; }
 
         public string WindowTitle { get; set; } = "Demon Turf Save Manager";
+
+        public ThemeType CurrentTheme
+        {
+            get { return _currentTheme; }
+            set
+            {
+                _currentTheme = value;
+                OnPropertyChanged();
+            }
+        }
 
         public TreeViewModel DemonTurfTreeViewModel
         {
@@ -88,6 +97,7 @@ namespace DTSaveManager.ViewModels
         private void ChangeStyle()
         {
             ThemeService.ChangeTheme();
+            CurrentTheme = ThemeService.GetCurrentTheme();
         }
     }
 }

@@ -32,6 +32,7 @@ namespace DTSaveManager
                })
                .Build();
 
+            ConfigService.Initialize();
             ServiceProvider = host.Services;
         }
 
@@ -48,9 +49,10 @@ namespace DTSaveManager
             await host.StartAsync();
 
             var window = ServiceProvider.GetRequiredService<MainWindow>();
-            window.Show();
 
             base.OnStartup(e);
+
+            window.Show();
         }
 
         protected override async void OnExit(ExitEventArgs e)

@@ -3,6 +3,12 @@
                     xmlns:controls="clr-namespace:DTSaveManager.Views.Custom_Controls">
 
     <Style x:Key="BorderlessButtonBase" TargetType="{x:Type Button}">
+        <Setter Property="ToolTipService.HasDropShadow" Value="False"/>
+        <Setter Property="ToolTipService.Placement" Value="Center"/>
+        <Setter Property="ToolTipService.ShowDuration" Value="999999999"/>
+        <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+        <Setter Property="ToolTipService.VerticalOffset" Value="30"/>
+
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5 0 5 0"/>
@@ -17,9 +23,21 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="BorderlessToggleButtonBase" TargetType="{x:Type ToggleButton}">
+        <Setter Property="ToolTipService.HasDropShadow" Value="False"/>
+        <Setter Property="ToolTipService.Placement" Value="Center"/>
+        <Setter Property="ToolTipService.ShowDuration" Value="999999999"/>
+        <Setter Property="ToolTipService.InitialShowDelay" Value="0"/>
+        <Setter Property="ToolTipService.VerticalOffset" Value="28"/>
+        
         <Setter Property="HorizontalContentAlignment" Value="Center"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="Margin" Value="5 0 5 0"/>
@@ -34,13 +52,19 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
-    <Style x:Key="RadioButtonBase" TargetType="{x:Type RadioButton}">
+    <Style x:Key="BaseRadioButton" TargetType="{x:Type RadioButton}">
         <Setter Property="Background" Value="{DynamicResource CheckBoxBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource CheckBoxBorderBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource DTInteractiveBrush}"/>
-        <Setter Property="BorderThickness" Value="1.25"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RadioButton}">
@@ -61,31 +85,6 @@
                         <ContentPresenter x:Name="contentPresenter" Grid.Column="1" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" 
                                           RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="HasContent" Value="true">
-                            <Setter Property="Padding" Value="4,-1,0,0"/>
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBackgroundHoverBrush}"/>
-                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBorderHoverBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource CheckBoxForegroundHoverBrush}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource CheckBoxForegroundHoverBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="true">
-                            <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBackgroundPressedBrush}"/>
-                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="{DynamicResource CheckBoxBorderPressedBrush}"/>
-                            <Setter Property="Fill" TargetName="optionMark" Value="{DynamicResource CheckBoxForegroundPressedBrush}"/>
-                            <Setter Property="Fill" TargetName="indeterminateMark" Value="{DynamicResource CheckBoxForegroundPressedBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="true">
-                            <Setter Property="Opacity" TargetName="optionMark" Value="1"/>
-                            <Setter Property="Opacity" TargetName="indeterminateMark" Value="0"/>
-                        </Trigger>
-                        <Trigger Property="IsChecked" Value="{x:Null}">
-                            <Setter Property="Opacity" TargetName="optionMark" Value="0"/>
-                            <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -131,6 +130,7 @@
                                                     <Trigger Property="IsMouseOver" Value="True">
                                                         <Setter TargetName="PART_TextBlock" Property="Foreground" Value="{DynamicResource DTMenuButtonHoverBrush}"/>
                                                         <Setter TargetName="PART_Label" Property="Foreground" Value="{DynamicResource DTMenuButtonHoverBrush}"/>
+                                                        <Setter Property="Cursor" Value="Hand" />
                                                     </Trigger>
                                                     <Trigger Property="IsMouseOver" Value="False">
                                                         <Setter TargetName="PART_TextBlock" Property="Foreground" Value="{DynamicResource DTMenuButtonBrush}"/>
@@ -161,9 +161,11 @@
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
                 <Setter Property="Foreground" Value="{DynamicResource AlertPressBrush}"/>
+                <Setter Property="ToolTipService.IsEnabled" Value="False"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="{x:Null}">
                 <Setter Property="Foreground" Value="{DynamicResource DTAlertBrush}"/>
+                <Setter Property="ToolTipService.IsEnabled" Value="False"/>
             </Trigger>
             <Trigger Property="IsFocused" Value="False">
                 <Setter Property="IsChecked" Value="False"/>
@@ -193,6 +195,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter TargetName="border" Property="Background" Value="{StaticResource WindowButtonHoverBrush}"/>
+                            <Setter Property="Cursor" Value="Hand" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter TargetName="border" Property="Background" Value="{StaticResource WindowButtonPressedBrush}"/>
@@ -213,6 +216,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
                             <Setter TargetName="border" Property="Background" Value="{StaticResource WindowCloseButtonHoverBrush}" />
+                            <Setter Property="Cursor" Value="Hand" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter TargetName="border" Property="Background" Value="{StaticResource WindowCloseButtonPressedBrush}" />

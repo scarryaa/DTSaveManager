@@ -8,7 +8,7 @@
         xmlns:controls="clr-namespace:DTSaveManager.Views.Custom_Controls"
         xmlns:converters="clr-namespace:DTSaveManager.Converters"
         xmlns:viewmodels="clr-namespace:DTSaveManager.ViewModels"
-        Title="MainWindow" Height="450" Width="500" MinWidth="350" MinHeight="300" WindowStyle="None">
+        Title="Demon Turf Save Manager" Height="450" Width="500" MinWidth="350" MinHeight="300" WindowStyle="None">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="25" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
@@ -22,13 +22,16 @@
         <DataTemplate DataType="{x:Type viewmodels:TreeViewModel}">
             <views:TreeView/>
         </DataTemplate>
+        <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BaseTextBlockStyle}"/>
+        <Style TargetType="{x:Type Control}" BasedOn="{StaticResource BaseStyle}"/>
 
         <converters:CurrentViewModelToSelectedIndexConverter x:Key="currentViewModelToSelectedIndexConverter"/>
+        <converters:BooleanToVisibilityValueConverter x:Key="booleanToVisibilityValueConverter"/>
     </Window.Resources>
 
     <!--Window Chrome-->
     <Border BorderThickness="0">
-        
+
         <Border.Style>
             <Style BasedOn="{StaticResource MainWindow}" TargetType="{x:Type Border}">
                 <Style.Triggers>
@@ -38,7 +41,7 @@
                 </Style.Triggers>
             </Style>
         </Border.Style>
-        
+
         <Grid Background="{DynamicResource DTBackgroundBrush}">
             <Grid.ColumnDefinitions>
                 <!--Caption Bar-->
@@ -52,13 +55,13 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
+
             <Rectangle Fill="{DynamicResource DTTitleBarBrush}" Width="Auto" Grid.ColumnSpan="10"/>
             <TextBlock FontWeight="DemiBold" FontSize="12" Grid.Column="0" Margin="8 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding WindowTitle}" 
                        Foreground="{StaticResource DTTitleTextBrush}"/>
@@ -86,16 +89,16 @@
                 <Path Data="M12 12 L0 0 M12 0 L0 12" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" 
                       StrokeThickness="1" Height="8" Stretch="Fill" Width="8"/>
             </Button>
-            
-            <controls:LabelButton LabelText="{Binding CopyDirectoryPathText}" ButtonText="&#xf0c5;" Margin="0 2 6 0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" Panel.ZIndex="1"
+
+            <controls:LabelButton FontSize="{StaticResource FontSizeRegular}" LabelText="{Binding CopyDirectoryPathText}" ButtonText="&#xf0c5;" Margin="0 2 6 0" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" Panel.ZIndex="1"
                                   Style="{StaticResource BaseLabelButton}" Command="{Binding CopyDirectoryPathCommand}" 
                                   CommandParameter="{Binding CurrentViewModel}" Content="&#xf0c5;" VerticalAlignment="Center" HorizontalAlignment="Right"/>
 
             <TabControl Style="{StaticResource BaseTabControl}" Background="{DynamicResource DTForegroundBrush}" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="7" 
                         HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" SelectedIndex="{Binding CurrentViewModel, Mode=TwoWay, 
                             Converter={StaticResource currentViewModelToSelectedIndexConverter}}">
-                <TabItem Style="{StaticResource BaseTabItem}" Header="Demon Turf" Content="{Binding DemonTurfTreeViewModel}"/>
-                <TabItem Style="{StaticResource BaseTabItem}" Header="Neon Splash" Content="{Binding NeonSplashTreeViewModel}"/>
+                <TabItem FontSize="{StaticResource FontSizeRegular}" Style="{StaticResource BaseTabItem}" Header="Demon Turf" Content="{Binding DemonTurfTreeViewModel}"/>
+                <TabItem FontSize="{StaticResource FontSizeRegular}" Style="{StaticResource BaseTabItem}" Header="Neon Splash" Content="{Binding NeonSplashTreeViewModel}"/>
             </TabControl>
         </Grid>
     </Border>

@@ -2,7 +2,11 @@
 using DTSaveManager.Models;
 using DTSaveManager.Services;
 using DTSaveManager.ViewModels.Base;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -12,9 +16,9 @@ namespace DTSaveManager.ViewModels
     {
         private bool _isFocused;
         private bool _active;
-        private ObservableCollection<SaveMetadata> _saveMetadata;
+        private ObservableCollection<string> _saveMetadata;
         private ObservableCollection<TreeViewItemViewModel> _treeViewItemViewModels;
-        private CollectionView _itemsView;
+        private ICollectionView _itemsView;
 
         public TreeViewModel(bool isNeonMode)
         {
@@ -23,6 +27,8 @@ namespace DTSaveManager.ViewModels
 
             TreeViewMouseDownCommand = new RelayCommand(c => TreeViewMouseDown());
         }
+        public Action<object> showPopupAction { get; set; }
+        public Action<object> hidePopupAction { get; set; }
 
         public bool IsNeonMode
         {
@@ -44,7 +50,7 @@ namespace DTSaveManager.ViewModels
             }
         }
 
-        public ObservableCollection<SaveMetadata> SaveMetadata
+        public ObservableCollection<string> SaveMetadata
         {
             get { return _saveMetadata; }
             set { _saveMetadata = value; OnPropertyChanged(); }
@@ -56,13 +62,15 @@ namespace DTSaveManager.ViewModels
             set { _treeViewItemViewModels = value; OnPropertyChanged(); }
         }
 
-        public CollectionView ItemsView
+        public ICollectionView ItemsView
         {
             get { return _itemsView; }
             set { _itemsView = value; OnPropertyChanged(); }
         }
 
         public ICommand TreeViewMouseDownCommand { get; set; }
+        public ICommand ShowPopupCommand { get; set; }
+        public ICommand HidePopupCommand { get; set; }
 
         public string GetDirectory()
         {
@@ -71,31 +79,27 @@ namespace DTSaveManager.ViewModels
 
         public void UpdateSaveMetadata(bool neonMode)
         {
-            SaveMetadata = new ObservableCollection<SaveMetadata>(SaveMetadataService.Instance.GetSaveMetadata(neonMode));
             TreeViewItemViewModels = new ObservableCollection<TreeViewItemViewModel>();
-            foreach (SaveMetadata saveMetadata in SaveMetadata)
+            string activeFile = SaveMetadataService.Instance.GetActiveFile(neonMode);
+            foreach (KeyValuePair<string, int> item in SaveMetadataService.Instance.GetSaveMetadataDict(neonMode))
             {
                 TreeViewItemViewModels.Add(new TreeViewItemViewModel
                 {
-                    Id = saveMetadata.Id,
-                    Active = saveMetadata.Active,
-                    Filename = saveMetadata.Filename,
-                    Path = saveMetadata.Path,
-                    removeAction = item => RemoveMetadata(saveMetadata),
-                    duplicateAction = item => DuplicateMetadata(item, saveMetadata),
-                    renameMetadataAction = item => RenameMetadata(item, saveMetadata, item.Filename),
-                    changeActiveAction = item => ChangeActive(item, saveMetadata)
+                    Id = item.Value,
+                    Active = item.Key == activeFile,
+                    Filename = item.Key,
+                    Path = SaveMetadataService.Instance.GetFilePath(neonMode, item.Key),
+                    removeAction = treeItemVM => RemoveMetadata(treeItemVM.Filename),
+                    duplicateAction = treeItemVM => DuplicateMetadata(treeItemVM, treeItemVM.Filename),
+                    renameMetadataAction = (treeItemVM, obj) => RenameMetadata(treeItemVM, treeItemVM.Filename, obj),
+                    changeActiveAction = treeItemVM => ChangeActive(treeItemVM, treeItemVM.Filename)
                 });
             }
 
-            ItemsView = new ListCollectionView(TreeViewItemViewModels)
-            {
-                SortDescriptions =
-                {
-                    new System.ComponentModel.SortDescription("RootDisplayName", System.ComponentModel.ListSortDirection.Ascending),
-                    new System.ComponentModel.SortDescription("Id", System.ComponentModel.ListSortDirection.Ascending)
-                }
-            };
+            ItemsView = CollectionViewSource.GetDefaultView(TreeViewItemViewModels);
+            ItemsView.SortDescriptions.Add(new SortDescription("Active", ListSortDirection.Descending));
+            ItemsView.SortDescriptions.Add(new SortDescription("RootDisplayName", ListSortDirection.Ascending));
+            ItemsView.SortDescriptions.Add(new SortDescription("Id", ListSortDirection.Ascending));
         }
 
         private void TreeViewMouseDown()
@@ -104,47 +108,63 @@ namespace DTSaveManager.ViewModels
             IsFocused = true;
         }
 
-        private void ChangeActive(TreeViewItemViewModel treeViewItemViewModel, SaveMetadata saveMetadata)
+        private void ChangeActive(TreeViewItemViewModel treeViewItemViewModel, string fileName)
         {
+            SaveMetadataService.Instance.SetActiveFile(IsNeonMode, fileName);
+            string activeFile = SaveMetadataService.Instance.GetActiveFile(IsNeonMode);
             foreach (TreeViewItemViewModel item in TreeViewItemViewModels)
             {
-                item.Active = false;
+                item.Active = item.Filename == activeFile;
             }
-            treeViewItemViewModel.Active = true;
-            SaveMetadataService.Instance.ChangeActive(IsNeonMode, saveMetadata);
-            UpdateSaveMetadata(IsNeonMode);
+            ItemsView.Refresh();
         }
 
-        private void RemoveMetadata(SaveMetadata saveMetadata)
+        private void RemoveMetadata(string fileName)
         {
-            SaveMetadataService.Instance.RemoveMetadata(IsNeonMode, saveMetadata);
-            UpdateSaveMetadata(IsNeonMode);
+            SaveMetadataService.Instance.RemoveFile(IsNeonMode, fileName);
+            TreeViewItemViewModels.Where(m => m.Filename == fileName).ToList().All(m => TreeViewItemViewModels.Remove(m));
+            ItemsView.Refresh();
         }
 
-        private void DuplicateMetadata(TreeViewItemViewModel treeViewItemViewModel, SaveMetadata saveMetadata)
+        private void DuplicateMetadata(TreeViewItemViewModel treeViewItemViewModel, string fileName)
         {
-            var result = SaveMetadataService.Instance.DuplicateMetadata(IsNeonMode, saveMetadata);
+            var result = SaveMetadataService.Instance.DuplicateFile(IsNeonMode, fileName);
             if (result == null) treeViewItemViewModel.DisplayMessage(MessageType.FileExistsMessage, timeout: true);
             else
             {
                 treeViewItemViewModel.ClearMessage();
-                UpdateSaveMetadata(IsNeonMode);
+                string activeFile = SaveMetadataService.Instance.GetActiveFile(IsNeonMode);
+                TreeViewItemViewModels.Add(new TreeViewItemViewModel
+                {
+                    Id = result.Value.Value,
+                    Active = result.Value.Key == activeFile,
+                    Filename = result.Value.Key,
+                    Path = SaveMetadataService.Instance.GetFilePath(IsNeonMode, result.Value.Key),
+                    removeAction = treeItemVM => RemoveMetadata(treeItemVM.Filename),
+                    duplicateAction = treeItemVM => DuplicateMetadata(treeItemVM, treeItemVM.Filename),
+                    renameMetadataAction = (treeItemVM, obj) => RenameMetadata(treeItemVM, treeItemVM.Filename, obj),
+                    changeActiveAction = treeItemVM => ChangeActive(treeItemVM, treeItemVM.Filename)
+                });
+                ItemsView.Refresh();
             }
         }
 
-        private void RenameMetadata(TreeViewItemViewModel treeViewItemViewModel, SaveMetadata saveMetadata, string newFilename)
+        private bool RenameMetadata(TreeViewItemViewModel treeViewItemViewModel, string fileName, string newFilename)
         {
-            bool result = SaveMetadataService.Instance.Rename(IsNeonMode, saveMetadata, newFilename);
+            bool result = SaveMetadataService.Instance.RenameFile(IsNeonMode, fileName, newFilename);
             if (!result)
             {
-                treeViewItemViewModel.DisplayName = saveMetadata.Filename.Replace(".txt", "");
-                if (saveMetadata.Filename.Replace(".txt", "") != newFilename) treeViewItemViewModel.DisplayMessage(MessageType.FileExistsMessage, timeout: true);
+                treeViewItemViewModel.DisplayName = fileName.Replace(".txt", "");
+                if (fileName.Replace(".txt", "") != newFilename) treeViewItemViewModel.DisplayMessage(MessageType.FileExistsMessage, timeout: true);
             }
             else
             {
                 treeViewItemViewModel.ClearMessage();
-                UpdateSaveMetadata(IsNeonMode);
+                TreeViewItemViewModels.Where(m => m.Filename == fileName).First().Filename = newFilename;
+                ItemsView.Refresh();
             }
+
+            return result;
         }
     }
 }
