@@ -1,4 +1,5 @@
 ﻿using DTSaveManager.Models;
+using DTSaveManager.Views.Custom_Controls;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
@@ -27,9 +28,31 @@ namespace DTSaveManager.Services
 
         private SaveMetadataService()
         {
+            // TODO: should eventually fix this placement
+            if (ConfigService.GetNeonSplashDisabled() == null)
+            {
+                MessageBoxResult result = PopupBox.Show("Demon Turf Save Manager can also manage files for Demon Turf Neon Splash. Would you like to enable this feature?" +
+                    "\n\n(Can be modified later in settings)", true, false);
+                if (result == MessageBoxResult.Yes) ConfigService.SetNeonSplashDisabled(false);
+                else if (result == MessageBoxResult.No) ConfigService.SetNeonSplashDisabled(true);
+                else ConfigService.SetNeonSplashDisabled(true);
+            }
+
             // run initial setup functions
             // errors if steam is in offline mode?
-            (_dtSaveDirectory, _neonSaveDirectory) = GetPathFromRegistryKeys();
+            _dtSaveDirectory = ConfigService.GetDTSaveDirectory();
+            if (_dtSaveDirectory == null)
+            {
+                _dtSaveDirectory = GetPathFromRegistryKeys(neonSplash: false);
+                ConfigService.SetDTSaveDirectory(_dtSaveDirectory);
+            }
+
+            _neonSaveDirectory = ConfigService.GetNSSaveDirectory();
+            if (_neonSaveDirectory == null && !ConfigService.GetNeonSplashDisabled().Value)
+            {
+                _neonSaveDirectory = GetPathFromRegistryKeys(neonSplash: true);
+                ConfigService.SetNSSaveDirectory(_neonSaveDirectory);
+            }
 
             if (_dtSaveDirectory != null)
             {
@@ -44,7 +67,7 @@ namespace DTSaveManager.Services
             }
         }
 
-        private (string, string) GetPathFromRegistryKeys()
+        private string GetPathFromRegistryKeys(bool neonSplash)
         {
             string _steamActiveUser = "";
             string _steamInstallPath = "";
@@ -94,32 +117,65 @@ namespace DTSaveManager.Services
                 if (!Directory.Exists(_dtPath)) _dtPath = null;
                 if (!Directory.Exists(_neonSplashPath)) _neonSplashPath = null;
 
-                return (_dtPath, _neonSplashPath);
+                if (_dtPath == null && !neonSplash) return ShowManualDirectorySelection(neonSplash: false);
+                if (_neonSplashPath == null && neonSplash) return ShowManualDirectorySelection(neonSplash: true);
+
+                if (neonSplash) return _neonSplashPath;
+                else return _dtPath;
             }
             catch
             {
-                // check for GOG
+                // check for GOG (DT only)
                 if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + $@"\..\LocalLow\Fabraz\Demon Turf\{SAVE_FILE_NAME}"))
                 {
-                    return (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\LocalLow\Fabraz\Demon Turf\", null);
+                    return (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\..\LocalLow\Fabraz\Demon Turf\");
                 }
                 else
                 {
-                    MessageBox.Show("Could not find Demon Turf install directory. Please ensure the game is installed, or select a folder manually.");
-                    OpenFileDialog openFileDialog = new OpenFileDialog();
-                    {
-                        openFileDialog.Filter = $"{SAVE_FILE_NAME}| *.txt";
-                        openFileDialog.FileName = SAVE_FILE_NAME;
-                        openFileDialog.FilterIndex = 1;
+                    return ShowManualDirectorySelection(neonSplash: false);
+                }
+            }
+        }
 
-                        if (openFileDialog.ShowDialog() == true)
-                        {
-                            return (Path.GetDirectoryName(openFileDialog.FileName), null);
-                        }
-                        else
-                        {
-                            return (Environment.CurrentDirectory, null);
-                        }
+        private string ShowManualDirectorySelection(bool neonSplash)
+        {
+            if (!neonSplash)
+            {
+                PopupBox.Show("Could not find Demon Turf install directory. Please ensure that steam or GOG is running and the game is installed, or select a folder manually.");
+                OpenFileDialog dtFileDialog = new OpenFileDialog();
+                {
+                    dtFileDialog.Filter = $"{SAVE_FILE_NAME}| *.txt";
+                    dtFileDialog.FileName = SAVE_FILE_NAME;
+                    dtFileDialog.FilterIndex = 1;
+                    dtFileDialog.Title = "Select a Demon Turf install directory...";
+
+                    if (dtFileDialog.ShowDialog() == true)
+                    {
+                        return (Path.GetDirectoryName(dtFileDialog.FileName));
+                    }
+                    else
+                    {
+                        return (null);
+                    }
+                }
+            }
+            else
+            {
+                PopupBox.Show("Could not find Neon Splash install directory. Please ensure that steam or GOG is running and the game is installed, or select a folder manually.");
+                OpenFileDialog neonFileDialog = new OpenFileDialog();
+                {
+                    neonFileDialog.Filter = $"{SAVE_FILE_NAME}| *.txt";
+                    neonFileDialog.FileName = SAVE_FILE_NAME;
+                    neonFileDialog.FilterIndex = 1;
+                    neonFileDialog.Title = "Select a Neon Splash install directory...";
+
+                    if (neonFileDialog.ShowDialog() == true)
+                    {
+                        return (Path.GetDirectoryName(neonFileDialog.FileName));
+                    }
+                    else
+                    {
+                        return (null);
                     }
                 }
             }

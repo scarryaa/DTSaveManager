@@ -8,7 +8,7 @@
         xmlns:controls="clr-namespace:DTSaveManager.Views.Custom_Controls"
         xmlns:converters="clr-namespace:DTSaveManager.Converters"
         xmlns:viewmodels="clr-namespace:DTSaveManager.ViewModels"
-        Title="Demon Turf Save Manager" Height="450" Width="500" MinWidth="350" MinHeight="300" WindowStyle="None">
+        Title="Demon Turf Save Manager" Height="450" Width="500" MinWidth="350" MinHeight="300" WindowStyle="None" Activated="MainWindow_Activated" Deactivated="MainWindow_Deactivated">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="25" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
@@ -27,13 +27,14 @@
 
         <converters:CurrentViewModelToSelectedIndexConverter x:Key="currentViewModelToSelectedIndexConverter"/>
         <converters:BooleanToVisibilityValueConverter x:Key="booleanToVisibilityValueConverter"/>
+        <converters:BooleanToInverseVisibilityValueConverter x:Key="booleanToInverseVisibilityValueConverter"/>
     </Window.Resources>
 
     <!--Window Chrome-->
     <Border BorderThickness="0">
 
         <Border.Style>
-            <Style BasedOn="{StaticResource MainWindow}" TargetType="{x:Type Border}">
+            <Style BasedOn="{StaticResource MainWindowBorder}" TargetType="{x:Type Border}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
                         <Setter Property="BorderThickness" Value="0" />
@@ -44,6 +45,7 @@
 
         <Grid Background="{DynamicResource DTBackgroundBrush}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <!--Caption Bar-->
                 <ColumnDefinition Width="*" />
                 <!--Buttons-->
@@ -62,29 +64,46 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Rectangle Fill="{DynamicResource DTTitleBarBrush}" Width="Auto" Grid.ColumnSpan="10"/>
-            <TextBlock FontWeight="DemiBold" FontSize="12" Grid.Column="0" Margin="8 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding WindowTitle}" 
-                       Foreground="{StaticResource DTTitleTextBrush}"/>
+            <Rectangle Width="Auto" Grid.ColumnSpan="10" Fill="{DynamicResource DTTitleBarBrush}"/>
+
+            <Button Width="23" Height="20" Margin="1 0 0 0" Content="&#xf013;" FontFamily="{StaticResource FontAwesome}" RenderOptions.EdgeMode="Aliased" 
+                    FontSize="{StaticResource FontSizeVerySmall}" Grid.Column="0" Command="{Binding OptionsCommand}" Style="{StaticResource GearButton}"/>
+
+
+            <TextBlock FontWeight="DemiBold" FontSize="12" Grid.Column="1" Margin="2 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding WindowTitle}">
+                <TextBlock.Style>
+                    <Style TargetType="{x:Type TextBlock}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=ApplicationActive}" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource DTTitleTextBrush}"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=ApplicationActive}" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource DTTitleTextLightBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
             <Button Width="23" Height="20" Content="&#xf186;" FontFamily="{StaticResource FontAwesome}" RenderOptions.EdgeMode="Aliased" 
-                    Foreground="{DynamicResource TextBrush}" Grid.Column="1" Command="{Binding ChangeStyleCommand}" Style="{StaticResource WindowButton}"/>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="3" 
+                    Foreground="{DynamicResource TextBrush}" Grid.Column="2" Command="{Binding ChangeStyleCommand}" Style="{StaticResource WindowButton}"/>
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="4" 
                     Click="OnMinimizeButtonClick" Style="{StaticResource WindowButton}">
                 <Path Data="M 0,14 H 14" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" StrokeThickness="1" 
                       Height="8" Stretch="Fill" Width="8" Margin="0 7 0 0"/>
             </Button>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="maximizeButton" Grid.Column="4" 
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="maximizeButton" Grid.Column="5" 
                     Click="OnMaximizeRestoreButtonClick" Style="{StaticResource WindowButton}">
                 <Path Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" 
                       StrokeThickness="1" Height="8" Stretch="Fill" Width="8"/>
             </Button>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="restoreButton" Grid.Column="4" 
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Name="restoreButton" Grid.Column="5" 
                     Click="OnMaximizeRestoreButtonClick" Style="{StaticResource WindowButton}">
                 <Path Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5" 
                       Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" StrokeThickness="1" Height="8" Stretch="Fill" 
                       Width="8"/>
             </Button>
-            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="5" Click="OnCloseButtonClick" 
+            <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="6" Click="OnCloseButtonClick" 
                     Style="{StaticResource WindowCloseButton}">
                 <Path Data="M12 12 L0 0 M12 0 L0 12" Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}" 
                       StrokeThickness="1" Height="8" Stretch="Fill" Width="8"/>
@@ -98,7 +117,7 @@
                         HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" SelectedIndex="{Binding CurrentViewModel, Mode=TwoWay, 
                             Converter={StaticResource currentViewModelToSelectedIndexConverter}}">
                 <TabItem FontSize="{StaticResource FontSizeRegular}" Style="{StaticResource BaseTabItem}" Header="Demon Turf" Content="{Binding DemonTurfTreeViewModel}"/>
-                <TabItem FontSize="{StaticResource FontSizeRegular}" Style="{StaticResource BaseTabItem}" Header="Neon Splash" Content="{Binding NeonSplashTreeViewModel}"/>
+                <TabItem FontSize="{StaticResource FontSizeRegular}" Visibility="{Binding NeonModeDisabled, Converter={StaticResource booleanToInverseVisibilityValueConverter}}" Style="{StaticResource BaseTabItem}" Header="Neon Splash" Content="{Binding NeonSplashTreeViewModel}"/>
             </TabControl>
         </Grid>
     </Border>

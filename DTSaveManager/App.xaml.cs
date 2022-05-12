@@ -2,6 +2,7 @@
 using DTSaveManager.Services.Interfaces;
 using DTSaveManager.ViewModels;
 using DTSaveManager.Views;
+using DTSaveManager.Views.Custom_Controls;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,7 +40,6 @@ namespace DTSaveManager
         private void ConfigureServices(IConfiguration configuration, IServiceCollection services)
         {
             services.AddSingleton<IClipboardService>(new ClipboardService())
-                .AddSingleton<MainWindow>()
                 .AddSingleton<MainWindowViewModel>()
                 .AddTransient<MainWindow>();
         }

@@ -88,6 +88,7 @@ namespace DTSaveManager.ViewModels
                     Id = item.Value,
                     Active = item.Key == activeFile,
                     Filename = item.Key,
+                    IsLocked = ConfigService.GetLockedFiles().Contains(item.Key),
                     Path = SaveMetadataService.Instance.GetFilePath(neonMode, item.Key),
                     removeAction = treeItemVM => RemoveMetadata(treeItemVM.Filename),
                     duplicateAction = treeItemVM => DuplicateMetadata(treeItemVM, treeItemVM.Filename),

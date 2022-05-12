@@ -3,6 +3,7 @@
 
     <SolidColorBrush Color="#0E0B0F" x:Key="DTTitleBarBrush"/>
     <SolidColorBrush Color="#514856" x:Key="DTTitleTextBrush"/>
+    <SolidColorBrush Color="#706477" x:Key="DTTitleTextLightBrush"/>
     <SolidColorBrush Color="#131216" x:Key="DTBackgroundBrush"/>
     <SolidColorBrush Color="#2B242D" x:Key="DTForegroundBrush"/>
     <SolidColorBrush Color="#EAEAEA" x:Key="DTMenuButtonBrush"/>
@@ -17,10 +18,14 @@
     <SolidColorBrush Color="#FFBD7C " x:Key="InteractiveHoverBrush"/>
     <SolidColorBrush Color="#FF5E5E" x:Key="AlertHoverBrush"/>
     <SolidColorBrush Color="#BA9DC4" x:Key="DTMenuButtonHoverBrush"/>
+    <SolidColorBrush Color="#BA9DC4" x:Key="DTGearButtonHoverBrush"/>
     <!-- Button Press -->
     <SolidColorBrush Color="#C18743" x:Key="InteractivePressedBrush"/>
     <SolidColorBrush Color="#F23E3E" x:Key="AlertPressBrush"/>
     <SolidColorBrush Color="#806D87" x:Key="DTMenuButtonPressedBrush"/>
+    <SolidColorBrush Color="#806D87" x:Key="DTGearButtonPressedBrush"/>
+    <!-- Inactive Button -->
+    <SolidColorBrush Color="#AFAFAF" x:Key="DTButtonInactiveBrush"/>
 
     <!-- CheckBox -->
     <SolidColorBrush Color="#272233" x:Key="CheckBoxBackgroundBrush"/>

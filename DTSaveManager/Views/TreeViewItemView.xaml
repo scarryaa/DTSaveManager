@@ -22,18 +22,16 @@
         <converters:MessageTypeToColorValueConverter x:Key="messageTypeToColorValueConverter"/>
         <converters:BooleanToVisibilityValueConverter x:Key="booleanToVisibilityValueConverter"/>
         <converters:BooleanToColorMultiValueConverter x:Key="booleanToColorMultiValueConverter"/>
+        <converters:InverseBooleanValueConverter x:Key="inverseBooleanValueConverter"/>
+        <converters:IsActiveToIsEnabledMultiValueConverter x:Key="isActiveToIsEnabledMultiValueConverter"/>
+        <converters:BooleanToFontWeightValueConverter x:Key="booleanToFontWeightValueConverter"/>
     </UserControl.Resources>
 
-    <Border d:Background="{DynamicResource ActiveSaveFileBrush}" CornerRadius="5" Padding="0 0 7 0" Margin="0 3 0 3">
-        <Border.Background>
-            <MultiBinding Converter="{StaticResource booleanToColorMultiValueConverter}">
-                <Binding Path="Active"/>
-                <Binding Path="DataContext.CurrentTheme" UpdateSourceTrigger="PropertyChanged" RelativeSource="{RelativeSource AncestorType=views:MainWindow}"/>
-            </MultiBinding>
-        </Border.Background>
+    <Border d:Background="{DynamicResource ActiveSaveFileBrush}" Background="{DynamicResource DTForegroundSecondaryBrush}" CornerRadius="5" Padding="0 0 7 0" Margin="0 3 0 3">
 
         <Grid MaxWidth="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=ActualWidth}" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -44,7 +42,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Border Grid.ColumnSpan="10" Margin="4 4 -3 4" CornerRadius="5 5 5 5">
+            <Border Grid.ColumnSpan="10" Margin="0 0 -7 0" CornerRadius="5 5 5 5">
                 <Border.Background>
                     <MultiBinding Converter="{StaticResource booleanToColorMultiValueConverter}">
                         <Binding Path="Active"/>
@@ -53,15 +51,43 @@
                 </Border.Background>
             </Border>
 
-            <controls:EditableLabelTextBox d:Value="Testing" x:Name="EditableLabelTextBox" Style="{StaticResource BaseEditableLabelTextBox}" HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                            Margin="0 0 0 1" Padding="0 0 0 0" IsEditing="{Binding IsEditing}" LostFocusCommand="{Binding RenameMetadataCommand}" 
-                                            Value="{Binding DisplayName}" Command="{Binding ChangeActiveCommand}"
+            <Button FontSize="{StaticResource FontSizeRegular}" Grid.Column="0" Margin="11 1 0 0" FontFamily="{StaticResource FontAwesome}" 
+                    HorizontalAlignment="Right">
+                <Button.Style>
+                    <Style BasedOn="{StaticResource BorderlessActionButton}" TargetType="{x:Type Button}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLocked}" Value="True">
+                                <Setter Property="Command" Value="{Binding UnlockCommand}"/>
+                                <Setter Property="Content" Value="&#xf023;"/>
+                                <Setter Property="Button.ToolTip">
+                                    <Setter.Value>
+                                        <ToolTip attached:ToolTipProperties.Foreground="{DynamicResource TextBrush}" attached:ToolTipProperties.Padding="6 2 6 2" attached:ToolTipProperties.Color="{DynamicResource DTTitleBarBrush}" attached:ToolTipProperties.Text="Unlock File"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsLocked}" Value="False">
+                                <Setter Property="Command" Value="{Binding LockCommand}"/>
+                                <Setter Property="Content" Value="&#xf09c;"/>
+                                <Setter Property="Button.ToolTip">
+                                    <Setter.Value>
+                                        <ToolTip attached:ToolTipProperties.Foreground="{DynamicResource TextBrush}" attached:ToolTipProperties.Padding="6 2 6 2" attached:ToolTipProperties.Color="{DynamicResource DTTitleBarBrush}" attached:ToolTipProperties.Text="Lock File"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <controls:EditableLabelTextBox d:Value="Testing" Grid.Column="1" x:Name="EditableLabelTextBox" Style="{StaticResource BaseEditableLabelTextBox}" HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                            Margin="3 0 0 1" Padding="0 0 0 0" IsEditing="{Binding IsEditing}" LostFocusCommand="{Binding RenameMetadataCommand}" 
+                                            Value="{Binding DisplayName}" Command="{Binding ChangeActiveCommand}" FontWeight="{Binding Active, Converter={StaticResource booleanToFontWeightValueConverter}}"
                                             LostFocusCommandParameter="{Binding Path=Value, RelativeSource={RelativeSource Self}}" Focused="{Binding IsFocused}"/>
-            <Label Margin="5 0 5 0" Padding="2 0 2 0" d:Content="Message" Grid.Column="1" Content="{Binding MessageText}"
+            <Label Padding="2 0 2 0" d:Content="Message" Grid.Column="2" Content="{Binding MessageText}"
                    FontSize="{StaticResource FontSizeRegular}"
                    Foreground="{Binding CurrentMessageType, Converter={StaticResource messageTypeToColorValueConverter}}" 
                    VerticalAlignment="Center" HorizontalAlignment="Right"
-                   Visibility="{Binding ShowMessage, Converter={StaticResource booleanToVisibilityValueConverter}}">
+                   Visibility="{Binding ShowMessage, Converter={StaticResource booleanToVisibilityValueConverter}}"
+                   Margin="5 0 5 0">
                 <Label.Background>
                     <MultiBinding Converter="{StaticResource booleanToColorMultiValueConverter}">
                         <Binding Path="Active"/>
@@ -70,23 +96,25 @@
                 </Label.Background>
 
             </Label>
-            <Button FontSize="{StaticResource FontSizeLarge}" Grid.Column="2" Margin="5 0 5 0" Style="{StaticResource BorderlessActionButton}" FontFamily="{StaticResource FontAwesome}" 
+            <Button FontSize="{StaticResource FontSizeLarge}" Grid.Column="3" Margin="5 0 5 0" FontFamily="{StaticResource FontAwesome}" 
                     Content="&#xf14a;" Command="{Binding ChangeActiveCommand}"
-                    HorizontalAlignment="Right">
+                    HorizontalAlignment="Right" Style="{StaticResource BorderlessActionButton}"
+                    IsEnabled="{Binding Active, Converter={StaticResource inverseBooleanValueConverter}}">
 
                 <Button.ToolTip>
                     <ToolTip attached:ToolTipProperties.Foreground="{DynamicResource TextBrush}" attached:ToolTipProperties.Padding="6 2 6 2" attached:ToolTipProperties.Color="{DynamicResource DTTitleBarBrush}" attached:ToolTipProperties.Text="Set as Active File"/>
                 </Button.ToolTip>
             </Button>
-            <Button FontSize="{StaticResource FontSizeLarge}" Grid.Column="3" Margin="5 0 5 0" Style="{StaticResource BorderlessActionButton}" FontFamily="{StaticResource FontAwesome}" 
+            <Button FontSize="{StaticResource FontSizeLarge}" Grid.Column="4" Margin="5 0 5 0" Style="{StaticResource BorderlessActionButton}" FontFamily="{StaticResource FontAwesome}" 
                     Content="&#xf14b;" Command="{Binding FocusTextBoxCommand}"
-                    HorizontalAlignment="Right">
+                    HorizontalAlignment="Right"
+                    IsEnabled="{Binding IsLocked, Converter={StaticResource inverseBooleanValueConverter}}">
 
                 <Button.ToolTip>
                     <ToolTip attached:ToolTipProperties.Foreground="{DynamicResource TextBrush}" attached:ToolTipProperties.Padding="6 2 6 2" attached:ToolTipProperties.Color="{DynamicResource DTTitleBarBrush}" attached:ToolTipProperties.Text="Rename"/>
                 </Button.ToolTip>
             </Button>
-            <Button FontSize="{StaticResource FontSizeRegular}" Grid.Column="4" Margin="5 0 5 1" Style="{StaticResource BorderlessActionButton}" FontFamily="{StaticResource FontAwesome}" 
+            <Button FontSize="{StaticResource FontSizeRegular}" Grid.Column="5" Margin="5 0 5 0" Style="{StaticResource BorderlessActionButton}" FontFamily="{StaticResource FontAwesome}" 
                     Content="&#xf24d;" Command="{Binding DuplicateCommand}" HorizontalAlignment="Right">
 
                 <i:Interaction.Triggers>
@@ -102,8 +130,14 @@
                     <ToolTip attached:ToolTipProperties.Foreground="{DynamicResource TextBrush}" attached:ToolTipProperties.Padding="6 2 6 2" attached:ToolTipProperties.Color="{DynamicResource DTTitleBarBrush}" Visibility="{Binding ShowPopup, Converter={StaticResource booleanToVisibilityValueConverter}}" attached:ToolTipProperties.Text="Duplicate"/>
                 </Button.ToolTip>
             </Button>
-            <ToggleButton FontSize="{StaticResource FontSizeLarge}" Grid.Column="5" Margin="5 0 5 0" Style="{StaticResource BorderlessDeleteToggleButton}" FontFamily="{StaticResource FontAwesome}" 
+            <ToggleButton FontSize="{StaticResource FontSizeLarge}" Grid.Column="6" Margin="5 0 5 0" Style="{StaticResource BorderlessDeleteToggleButton}" FontFamily="{StaticResource FontAwesome}" 
                           Content="&#x58;" Command="{Binding DisplayMessageCommand}" HorizontalAlignment="Right">
+                <ToggleButton.IsEnabled>
+                    <MultiBinding Converter="{StaticResource isActiveToIsEnabledMultiValueConverter}">
+                        <Binding Path="Active"/>
+                        <Binding Path="IsLocked"/>
+                    </MultiBinding>
+                </ToggleButton.IsEnabled>
 
                 <ToggleButton.ToolTip>
                     <ToolTip attached:ToolTipProperties.Foreground="{DynamicResource TextBrush}" attached:ToolTipProperties.Padding="6 2 6 2" attached:ToolTipProperties.Color="{DynamicResource DTTitleBarBrush}" attached:ToolTipProperties.Text="Delete"/>

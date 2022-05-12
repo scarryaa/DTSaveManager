@@ -25,6 +25,7 @@ namespace DTSaveManager.Services
                 Directory.CreateDirectory(_configPath);
                 SetActiveTheme(ThemeType.DarkTheme);
                 SetActiveFiles(("DTSaveData.txt", "DTSaveData.txt"));
+                config.LockedFiles = new List<string>();
                 SaveConfig();
             }
             else LoadConfig();
@@ -51,6 +52,55 @@ namespace DTSaveManager.Services
         public static string GetActiveTheme()
         {
             return config.ActiveTheme;
+        }
+
+        public static void LockFile(string fileName)
+        {
+            config.LockedFiles.Add(fileName);
+            SaveConfig();
+        }
+
+        public static void UnlockFile(string fileName)
+        {
+            config.LockedFiles.Remove(fileName);
+            SaveConfig();
+        }
+
+        public static List<string> GetLockedFiles()
+        {
+            return config.LockedFiles;
+        }
+
+        public static void SetDTSaveDirectory(string directory)
+        {
+            config.DemonTurfDirectory = directory;
+            SaveConfig();
+        }
+
+        public static string GetDTSaveDirectory()
+        {
+            return config.DemonTurfDirectory;
+        }
+
+        public static void SetNSSaveDirectory(string directory)
+        {
+            config.NeonSplashDirectory = directory;
+            SaveConfig();
+        }
+
+        public static bool? GetNeonSplashDisabled()
+        {
+            return config.NeonSplashDisabled;
+        }
+
+        public static void SetNeonSplashDisabled(bool value)
+        {
+            config.NeonSplashDisabled = value;
+        }
+
+        public static string GetNSSaveDirectory()
+        {
+            return config.NeonSplashDirectory;
         }
 
         private static void LoadConfig()

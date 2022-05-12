@@ -9,6 +9,14 @@
 
     <converters:BooleanToColorMultiValueConverter x:Key="booleanToColorMultiValueConverter"/>
 
+    <Style x:Key="BaseTextBlock" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="FontSize" Value="{StaticResource FontSizeRegular}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+    </Style>
+    
     <Style x:Key="BaseEditableLabelTextBox" TargetType="{x:Type controls:EditableLabelTextBox}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
@@ -21,7 +29,7 @@
                 <ControlTemplate TargetType="{x:Type controls:EditableLabelTextBox}">
                     <Grid Width="Auto">
                         <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                            <TextBox Name="PART_MainTextBox" Opacity="1" HorizontalAlignment="Left" Margin="5 8 0 0" Padding="5 2 0 0" CaretBrush="{DynamicResource TextBrush}" Text="{Binding DisplayName}" Foreground="{DynamicResource TextBrush}">
+                            <TextBox Name="PART_MainTextBox" Opacity="1" HorizontalAlignment="Left" Margin="0 8 0 0" Padding="5 2 0 0" CaretBrush="{DynamicResource TextBrush}" Text="{Binding DisplayName}" Foreground="{DynamicResource TextBrush}">
                                 <TextBox.Style>
                                     <Style TargetType="{x:Type TextBox}">
                                         <Setter Property="Template">

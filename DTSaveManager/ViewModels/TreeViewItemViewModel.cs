@@ -12,6 +12,7 @@ namespace DTSaveManager.ViewModels
         private bool _isEditing = false;
         private bool _isFocused = false;
         private bool _showMessage = false;
+        private bool _isLocked = false;
         private MessageType _currentMessageType;
         private string _messageText;
         private int _id;
@@ -36,6 +37,8 @@ namespace DTSaveManager.ViewModels
             ChangeActiveCommand = new RelayCommand(c => ChangeActive());
             DisplayPopupCommand = new RelayCommand(c => DisplayPopup());
             HidePopupCommand = new RelayCommand(c => HidePopup());
+            LockCommand = new RelayCommand(c => LockItem());
+            UnlockCommand = new RelayCommand(c => UnlockItem());
         }
 
         public Action<TreeViewItemViewModel> removeAction { get; set; }
@@ -79,6 +82,16 @@ namespace DTSaveManager.ViewModels
             set
             {
                 _showMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsLocked
+        {
+            get { return _isLocked; }
+            set
+            {
+                _isLocked = value;
                 OnPropertyChanged();
             }
         }
@@ -196,6 +209,8 @@ namespace DTSaveManager.ViewModels
         public ICommand ChangeActiveCommand { get; set; }
         public ICommand DisplayPopupCommand { get; set; }
         public ICommand HidePopupCommand { get; set; }
+        public ICommand LockCommand { get; set; }
+        public ICommand UnlockCommand { get; set; }
 
         public void DisplayMessage(MessageType messageType, bool timeout)
         {
@@ -240,6 +255,18 @@ namespace DTSaveManager.ViewModels
         private void HidePopup()
         {
             ShowPopup = false;
+        }
+
+        private void LockItem()
+        {
+            IsLocked = true;
+            ConfigService.LockFile(Filename);
+        }
+
+        private void UnlockItem()
+        {
+            IsLocked = false;
+            ConfigService.UnlockFile(Filename);
         }
 
         public void FocusTextBox()

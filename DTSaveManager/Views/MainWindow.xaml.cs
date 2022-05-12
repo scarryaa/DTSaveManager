@@ -10,6 +10,18 @@ namespace DTSaveManager.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+		public static DependencyProperty ApplicationActiveProperty =
+		DependencyProperty.RegisterAttached(
+			"ApplicationActive",
+			typeof(bool),
+			typeof(MainWindow));
+
+		public bool ApplicationActive
+		{
+			get { return (bool)GetValue(ApplicationActiveProperty); }
+			set { SetValue(ApplicationActiveProperty, value); }
+		}
+
 		protected override void OnSourceInitialized(EventArgs e)
 		{
 			base.OnSourceInitialized(e);
@@ -150,6 +162,16 @@ namespace DTSaveManager.Views
 		private void Window_StateChanged(object sender, EventArgs e)
 		{
 			this.RefreshMaximizeRestoreButton();
+		}
+
+		private void MainWindow_Activated(object sender, EventArgs e)
+		{
+			ApplicationActive = true;
+		}
+
+		private void MainWindow_Deactivated(object sender, EventArgs e)
+		{
+			ApplicationActive = false;
 		}
 	}
 }

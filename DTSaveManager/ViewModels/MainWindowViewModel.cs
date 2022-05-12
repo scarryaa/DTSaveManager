@@ -4,12 +4,14 @@ using DTSaveManager.DataTypes.Enums;
 using DTSaveManager.Services;
 using DTSaveManager.Services.Interfaces;
 using DTSaveManager.ViewModels.Base;
+using DTSaveManager.Views.Custom_Controls;
 
 namespace DTSaveManager.ViewModels
 {
     class MainWindowViewModel : ViewModelBase
     {
         private ThemeType _currentTheme = ThemeService.GetCurrentTheme();
+        private bool _neonModeDisabled = ConfigService.GetNeonSplashDisabled().Value;
         private TreeViewModel _demonTurfTreeViewModel;
         private TreeViewModel _neonSplashTreeViewModel;
         private ViewModelType _currentViewModel;
@@ -29,10 +31,12 @@ namespace DTSaveManager.ViewModels
 
             CopyDirectoryPathCommand = new RelayCommand(c => CopyDirectoryPath((ViewModelType)c));
             ChangeStyleCommand = new RelayCommand(c => ChangeStyle());
+            OptionsCommand = new RelayCommand(c => OpenOptions());
         }
 
         public ICommand CopyDirectoryPathCommand { get; set; }
         public ICommand ChangeStyleCommand { get; set; }
+        public ICommand OptionsCommand { get; set; }
 
         public string WindowTitle { get; set; } = "Demon Turf Save Manager";
 
@@ -42,6 +46,16 @@ namespace DTSaveManager.ViewModels
             set
             {
                 _currentTheme = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool NeonModeDisabled
+        {
+            get { return _neonModeDisabled; }
+            set
+            {
+                _neonModeDisabled = value;
                 OnPropertyChanged();
             }
         }
@@ -98,6 +112,11 @@ namespace DTSaveManager.ViewModels
         {
             ThemeService.ChangeTheme();
             CurrentTheme = ThemeService.GetCurrentTheme();
+        }
+
+        private void OpenOptions()
+        {
+            PopupBox.Show("Could not find Demon Turf install directory. Please ensure that steam or GOG is running and the game is installed, or select folders manually.");
         }
     }
 }
