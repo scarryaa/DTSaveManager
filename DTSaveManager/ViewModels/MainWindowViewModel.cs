@@ -104,9 +104,19 @@ namespace DTSaveManager.ViewModels
 
         private void CopyDirectoryPath(ViewModelType vmType)
         {
-            if (vmType == ViewModelType.DemonTurf) _clipboardService.SetText(DemonTurfTreeViewModel.GetDirectory());
-            else if (vmType == ViewModelType.NeonSplash) _clipboardService.SetText(NeonSplashTreeViewModel.GetDirectory());
-            CopyDirectoryPathText = "Path copied!";
+            string path = null;
+            if (vmType == ViewModelType.DemonTurf)
+            {
+                path = DemonTurfTreeViewModel.GetDirectory();
+                if (path != null) _clipboardService.SetText(path);
+            }
+            else if (vmType == ViewModelType.NeonSplash)
+            {
+                path = NeonSplashTreeViewModel.GetDirectory();
+                if (path != null) _clipboardService.SetText(path);
+            }
+            if (path == null) CopyDirectoryPathText = "No path to copy!";
+            else CopyDirectoryPathText = "Path copied!";
             _timerService.DoTaskAfterDelay(3000, new Action(() => CopyDirectoryPathText = "Copy path"));
         }
 
@@ -118,9 +128,21 @@ namespace DTSaveManager.ViewModels
 
         private void OpenOptions()
         {
+            var oldDTDirectory = ConfigService.GetDTSaveDirectory();
+            var oldNSDirectory = ConfigService.GetNSSaveDirectory();
             var result = SettingsPage.Show();
-            if (result.Item2 != null && result.Item2 != "No save directory found...")
+            if (result.Item1 != null && result.Item1 != oldDTDirectory)
+            {
+                SaveMetadataService.Instance.ReinitializeFiles(neonMode: false);
+                DemonTurfTreeViewModel = new TreeViewModel(isNeonMode: false);
+            }
+
+            if (result.Item2 != null && result.Item2 != "No save directory found..." && result.Item2 != oldNSDirectory)
+            {
+                SaveMetadataService.Instance.ReinitializeFiles(neonMode: true);
+                NeonSplashTreeViewModel = new TreeViewModel(isNeonMode: true);
                 NeonSplashDisabled = false;
+            }
         }
 
         private void MainWindowContentRendered()

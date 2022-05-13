@@ -96,6 +96,7 @@ namespace DTSaveManager.Services
         public static void SetNeonSplashDisabled(bool value)
         {
             config.NeonSplashDisabled = value;
+            SaveConfig();
         }
 
         public static string GetNSSaveDirectory()

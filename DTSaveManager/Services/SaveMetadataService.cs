@@ -122,7 +122,9 @@ namespace DTSaveManager.Services
                 }
                 else
                 {
-                    return ShowManualDirectorySelection(neonSplash: false);
+                    if (!neonSplash) return ShowManualDirectorySelection(neonSplash: false);
+                    else if (neonSplash) return ShowManualDirectorySelection(neonSplash: true);
+                    else return null;
                 }
             }
         }
@@ -205,7 +207,23 @@ namespace DTSaveManager.Services
             }
         }
 
-        private void CopyActiveFile(string saveDirectory, string activeFile)
+        public void ReinitializeFiles(bool neonMode)
+        {
+            if (neonMode)
+            {
+                _neonSaveDirectory = ConfigService.GetNSSaveDirectory();
+                InitializeFiles(true, _neonSaveDirectory, NeonSplashSaveMetadata);
+                CopyActiveFile(_neonSaveDirectory, NeonSplashActiveFile);
+            }
+            else
+            {
+                _dtSaveDirectory = ConfigService.GetDTSaveDirectory();
+                InitializeFiles(false, _dtSaveDirectory, DtSaveMetadata);
+                CopyActiveFile(_dtSaveDirectory, DtActiveFile);
+            }
+        }
+
+        public void CopyActiveFile(string saveDirectory, string activeFile)
         {
             // copy active files on program open, ensuring data is up to date
             File.Copy(saveDirectory + $@"\{SAVE_FILE_NAME}", saveDirectory + $@"\{DTSM_FOLDER_NAME}\" + activeFile, true);
