@@ -102,7 +102,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource InteractivePressedBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DTButtonInactiveBrush}"/>
+                <Setter Property="Visibility" Value="Collapsed"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -177,7 +177,7 @@
                 <Setter Property="Foreground" Value="{DynamicResource AlertHoverBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource DTButtonInactiveBrush}"/>
+                <Setter Property="Visibility" Value="Collapsed"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -275,11 +275,58 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border TextBlock.Foreground="{TemplateBinding Foreground}" x:Name="Border" CornerRadius="2" BorderThickness="1" Background="{DynamicResource DTInteractiveBrush}" BorderBrush="{DynamicResource WindowButtonPressedBrush}">
+                    <Border TextBlock.Foreground="{TemplateBinding Foreground}" x:Name="Border" CornerRadius="2" BorderThickness="1" Background="{DynamicResource DTPopupBoxButtonBrush}" BorderBrush="{DynamicResource DTPopupBoxButtonBrush}">
                         <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DTPopupBoxButtonBrush}"/>
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource DTPopupBoxButtonBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource InteractiveHoverBrush}"/>
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource InteractiveHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource InteractivePressedBrush}"/>
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource InteractivePressedBrush}"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SettingsWindowButton" TargetType="{x:Type Button}">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border TextBlock.Foreground="{TemplateBinding Foreground}" x:Name="Border" CornerRadius="0" BorderThickness="1" Background="{DynamicResource DTPopupBoxButtonBrush}" BorderBrush="{DynamicResource DTPopupBoxButtonBorderBrush}">
+                        <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource DTPopupBoxButtonBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource InteractiveHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource InteractivePressedBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="LinkButton" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <TextBlock Foreground="DodgerBlue" Text="{TemplateBinding Content}" TextDecorations="Underline" Cursor="Hand"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

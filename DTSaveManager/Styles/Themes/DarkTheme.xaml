@@ -45,5 +45,12 @@
 
     <!-- Active Border -->
     <SolidColorBrush Color="#3C2F4C" x:Key="ActiveSaveFileBrush"/>
+    
+    <!-- Popup Box -->
+    <SolidColorBrush Color="#0E0B0F" x:Key="DTPopupBoxBrush"/>
+    <SolidColorBrush Color="#DB9C4A" x:Key="DTPopupBoxButtonBrush"/>
+    <SolidColorBrush Color="#C18743" x:Key="DTPopupBoxButtonBorderBrush"/>
+
+    <SolidColorBrush Color="#000000" x:Key="DTBlack"/>
 
 </ResourceDictionary>

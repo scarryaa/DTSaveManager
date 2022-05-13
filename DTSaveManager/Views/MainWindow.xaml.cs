@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DTSaveManager.Services;
+using System;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -121,6 +122,10 @@ namespace DTSaveManager.Views
             InitializeComponent();
 			RefreshMaximizeRestoreButton();
 			StateChanged += Window_StateChanged;
+
+			var mainScreenDimensions = WindowService.Instance.GetMainScreenDimensions();
+			this.Left = (mainScreenDimensions.X / 2) - (this.Width / 2);
+			this.Top = (mainScreenDimensions.Y / 2) - (this.Height / 2);
 		}
 
 		private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)

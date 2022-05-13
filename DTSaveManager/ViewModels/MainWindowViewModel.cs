@@ -11,9 +11,9 @@ namespace DTSaveManager.ViewModels
     class MainWindowViewModel : ViewModelBase
     {
         private ThemeType _currentTheme = ThemeService.GetCurrentTheme();
-        private bool _neonModeDisabled = ConfigService.GetNeonSplashDisabled().Value;
         private TreeViewModel _demonTurfTreeViewModel;
         private TreeViewModel _neonSplashTreeViewModel;
+        private bool _neonSplashDisabled;
         private ViewModelType _currentViewModel;
         private string _copyDirectoryPathText = "Copy path";
         private IClipboardService _clipboardService { get; }
@@ -32,11 +32,13 @@ namespace DTSaveManager.ViewModels
             CopyDirectoryPathCommand = new RelayCommand(c => CopyDirectoryPath((ViewModelType)c));
             ChangeStyleCommand = new RelayCommand(c => ChangeStyle());
             OptionsCommand = new RelayCommand(c => OpenOptions());
+            MainWindowContentRenderedCommand = new RelayCommand(c => MainWindowContentRendered());
         }
 
         public ICommand CopyDirectoryPathCommand { get; set; }
         public ICommand ChangeStyleCommand { get; set; }
         public ICommand OptionsCommand { get; set; }
+        public ICommand MainWindowContentRenderedCommand { get; set; }
 
         public string WindowTitle { get; set; } = "Demon Turf Save Manager";
 
@@ -46,16 +48,6 @@ namespace DTSaveManager.ViewModels
             set
             {
                 _currentTheme = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public bool NeonModeDisabled
-        {
-            get { return _neonModeDisabled; }
-            set
-            {
-                _neonModeDisabled = value;
                 OnPropertyChanged();
             }
         }
@@ -76,6 +68,16 @@ namespace DTSaveManager.ViewModels
             set
             {
                 _neonSplashTreeViewModel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool NeonSplashDisabled
+        {
+            get { return _neonSplashDisabled; }
+            set
+            {
+                _neonSplashDisabled = value;
                 OnPropertyChanged();
             }
         }
@@ -116,7 +118,18 @@ namespace DTSaveManager.ViewModels
 
         private void OpenOptions()
         {
-            PopupBox.Show("Could not find Demon Turf install directory. Please ensure that steam or GOG is running and the game is installed, or select folders manually.");
+            var result = SettingsPage.Show();
+            if (result.Item2 != null && result.Item2 != "No save directory found...")
+                NeonSplashDisabled = false;
+        }
+
+        private void MainWindowContentRendered()
+        {
+            WindowService.Instance.SetMainWindowIsRendered();
+            if (ConfigService.GetNeonSplashDisabled().HasValue)
+                NeonSplashDisabled = ConfigService.GetNeonSplashDisabled().Value;
+            else
+                NeonSplashDisabled = false;
         }
     }
 }

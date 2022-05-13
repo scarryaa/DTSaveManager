@@ -28,16 +28,6 @@ namespace DTSaveManager.Services
 
         private SaveMetadataService()
         {
-            // TODO: should eventually fix this placement
-            if (ConfigService.GetNeonSplashDisabled() == null)
-            {
-                MessageBoxResult result = PopupBox.Show("Demon Turf Save Manager can also manage files for Demon Turf Neon Splash. Would you like to enable this feature?" +
-                    "\n\n(Can be modified later in settings)", true, false);
-                if (result == MessageBoxResult.Yes) ConfigService.SetNeonSplashDisabled(false);
-                else if (result == MessageBoxResult.No) ConfigService.SetNeonSplashDisabled(true);
-                else ConfigService.SetNeonSplashDisabled(true);
-            }
-
             // run initial setup functions
             // errors if steam is in offline mode?
             _dtSaveDirectory = ConfigService.GetDTSaveDirectory();
@@ -48,7 +38,7 @@ namespace DTSaveManager.Services
             }
 
             _neonSaveDirectory = ConfigService.GetNSSaveDirectory();
-            if (_neonSaveDirectory == null && !ConfigService.GetNeonSplashDisabled().Value)
+            if (_neonSaveDirectory == null && !ConfigService.GetNeonSplashDisabled().HasValue)
             {
                 _neonSaveDirectory = GetPathFromRegistryKeys(neonSplash: true);
                 ConfigService.SetNSSaveDirectory(_neonSaveDirectory);
@@ -67,7 +57,7 @@ namespace DTSaveManager.Services
             }
         }
 
-        private string GetPathFromRegistryKeys(bool neonSplash)
+        public string GetPathFromRegistryKeys(bool neonSplash)
         {
             string _steamActiveUser = "";
             string _steamInstallPath = "";
@@ -175,6 +165,7 @@ namespace DTSaveManager.Services
                     }
                     else
                     {
+                        ConfigService.SetNeonSplashDisabled(true);
                         return (null);
                     }
                 }

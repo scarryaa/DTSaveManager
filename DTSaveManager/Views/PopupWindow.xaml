@@ -6,7 +6,7 @@
         xmlns:converters="clr-namespace:DTSaveManager.Converters"
         xmlns:local="clr-namespace:DTSaveManager.Views"
         mc:Ignorable="d"
-        Height="175" Width="400" ResizeMode="NoResize" WindowStyle="None">
+        Height="175" Width="400" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True" Background="Transparent">
     
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="25" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"/>
@@ -17,9 +17,9 @@
     </Window.Resources>
     
     <!--Window Chrome-->
-    <Border Style="{StaticResource MainWindowBorder}">
+    <Border Background="{DynamicResource DTPopupBoxBrush}" CornerRadius="0" Style="{StaticResource MainWindowBorder}">
 
-        <Grid Background="{DynamicResource DTBackgroundBrush}" Margin="0">
+        <Grid Margin="0">
             <Grid.ColumnDefinitions>
                 <!--Caption Bar-->
                 <ColumnDefinition Width="*" />
@@ -31,8 +31,10 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
-            <Rectangle Width="Auto" Grid.ColumnSpan="10" Fill="{DynamicResource DTTitleBarBrush}"/>
+
+            <TextBlock FontWeight="DemiBold" FontSize="12" Grid.Column="0" Grid.Row="0" Margin="4 0 0 0" VerticalAlignment="Center" HorizontalAlignment="Left" 
+                       Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Title}"
+                       Foreground="{DynamicResource DTTitleTextLightBrush}"/>
 
             <Button Width="23" Height="20" RenderOptions.EdgeMode="Aliased" Foreground="{DynamicResource TextBrush}" Grid.Column="1" Click="OnCloseButtonClick" 
                     Style="{StaticResource WindowCloseButton}">
@@ -40,42 +42,41 @@
                       StrokeThickness="1" Height="8" Stretch="Fill" Width="8"/>
             </Button>
 
-            <Border Grid.Row="1" Grid.ColumnSpan="2" Background="{DynamicResource DTBackgroundBrush}" BorderBrush="{DynamicResource DTBackgroundBrush}" BorderThickness="1" CornerRadius="5">
+            <Border Background="{DynamicResource DTBackgroundBrush}" Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{DynamicResource DTBackgroundBrush}" CornerRadius="0 0 0 0" Margin="-1 -1 -1 -1" BorderThickness="1 1.5 1 1">
                 <Grid Grid.Row="1" Grid.ColumnSpan="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Background="{DynamicResource DTForegroundBrush}">
-                        <TextBlock Width="350" Margin="20 0 20 0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource BaseTextBlock}"
+                    <Border Background="{StaticResource DTForegroundBrush}" Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="2" BorderBrush="{DynamicResource DTBackgroundBrush}" Margin="0" CornerRadius="0" BorderThickness="1.25 0 1.25 1.25">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Width="350" Margin="20 0 20 0" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource BaseTextBlock}"
                                    Text="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Message}"
                                    d:Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam posuere mattis dui. Phasellus volutpat gravida arcu, ut varius mauris lobortis vitae. Aliquam luctus enim mauris, ac tristique lacus tempor ut."/>
-                    </Grid>
-                    
-                    <Grid Grid.Row="1" Height="50" Background="{DynamicResource DTForegroundSecondaryBrush}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <!-- OK -->
-                            <Button Width="75" HorizontalAlignment="Right" Margin="10 10 10 10" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, 
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 0 10 10" Grid.Row="1" Height="40">
+                                <!-- OK -->
+                                <Button Width="75" HorizontalAlignment="Right" Margin="10 0 10 10" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, 
                                 AncestorType={x:Type Window}}, Path=ShowOKButton, Converter={StaticResource booleanToVisibilityValueConverter}}" 
                                     Style="{StaticResource PopupWindowButton}" Click="OnOkButtonClick">
-                                <TextBlock Foreground="{DynamicResource TextBrush}">OK</TextBlock>
-                            </Button>
+                                    <TextBlock Foreground="{DynamicResource TextBrush}">OK</TextBlock>
+                                </Button>
 
-                            <!-- Yes and No -->
-                            <Button Width="75" HorizontalAlignment="Right" Margin="10 10 10 10" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                <!-- Yes and No -->
+                                <Button Width="75" HorizontalAlignment="Right" Margin="10 0 10 10" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, 
                                 AncestorType={x:Type Window}}, Path=ShowYesNoButtons, Converter={StaticResource booleanToVisibilityValueConverter}}" 
                                     Style="{StaticResource PopupWindowButton}" Click="OnNoButtonClick">
-                                <TextBlock Foreground="{DynamicResource TextBrush}">No</TextBlock>
-                            </Button>
-                            <Button Width="75" HorizontalAlignment="Right" Margin="10 10 10 10" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, 
+                                    <TextBlock Foreground="{DynamicResource TextBrush}">No</TextBlock>
+                                </Button>
+                                <Button Width="75" HorizontalAlignment="Right" Margin="10 0 10 10" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, 
                                 AncestorType={x:Type Window}}, Path=ShowYesNoButtons, Converter={StaticResource booleanToVisibilityValueConverter}}" 
                                     Style="{StaticResource PopupWindowButton}" Click="OnYesButtonClick">
-                                <TextBlock Foreground="{DynamicResource TextBrush}">Yes</TextBlock>
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                    
+                                    <TextBlock Foreground="{DynamicResource TextBrush}">Yes</TextBlock>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                 </Grid>
                 
             </Border>

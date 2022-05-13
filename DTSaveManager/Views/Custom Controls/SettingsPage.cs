@@ -1,4 +1,5 @@
 ﻿using DTSaveManager.Services;
+using DTSaveManager.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +9,11 @@ using System.Windows;
 
 namespace DTSaveManager.Views.Custom_Controls
 {
-    public static class PopupBox
+    public static class SettingsPage
     {
-        public static MessageBoxResult Show(string popupText, bool showYesNoButtons = false, bool showOKButton = true)
+        public static (string, string) Show()
         {
-            PopupWindow window = new PopupWindow(popupText, showYesNoButtons, showOKButton);
-            window.Title = "Warning";
+            SettingsWindow window = new SettingsWindow();
             var mainWindowLocation = WindowService.Instance.GetMainWindowLocation();
             var mainWindowDimensions = WindowService.Instance.GetMainWindowDimensions();
 
@@ -29,7 +29,8 @@ namespace DTSaveManager.Views.Custom_Controls
 
             window.ShowDialog();
 
-            return window.Result;
+            var result = (window.DataContext as SettingsWindowViewModel);
+            return (result.DtSaveDirectory, result.NeonSaveDirectory);
         }
     }
 }

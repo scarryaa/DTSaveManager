@@ -9,7 +9,7 @@
     <SolidColorBrush Color="#FFFFFF" x:Key="DTMenuButtonBrush"/>
     <SolidColorBrush Color="#009691" x:Key="DTInteractiveBrush"/>
     <SolidColorBrush Color="#E53748" x:Key="DTAlertBrush"/>
-    <SolidColorBrush Color="#A0DBD7" x:Key="DTForegroundSecondaryBrush"/>
+    <SolidColorBrush Color="#8FD8D2" x:Key="DTForegroundSecondaryBrush"/>
     <SolidColorBrush Color="#000000" x:Key="TextBrush"/>
     <SolidColorBrush Color="#FFFFFF" x:Key="InactiveTextBrush"/>
     <SolidColorBrush Color="#88CEC7" x:Key="InactiveTabBrush"/>
@@ -44,7 +44,15 @@
     <SolidColorBrush Color="#005B57" x:Key="DTScrollBarBrush"/>
 
     <!-- Active Border -->
-    <SolidColorBrush Color="#C8F4EE" x:Key="ActiveSaveFileBrush"/>
+    <SolidColorBrush Color="#B5F2E9" x:Key="ActiveSaveFileBrush"/>
+
+    <!-- Popup Box -->
+    <SolidColorBrush Color="#D4D6D8" x:Key="DTPopupBoxBrush"/>
+    <SolidColorBrush Color="#8FD8D2" x:Key="DTPopupBoxButtonBrush"/>
+    <SolidColorBrush Color="#61918D" x:Key="DTPopupBoxButtonBorderBrush"/>
+
+
+    <SolidColorBrush Color="#000000" x:Key="DTBlack"/>
 
 </ResourceDictionary>
     
